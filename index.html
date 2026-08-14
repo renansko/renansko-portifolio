@@ -889,44 +889,47 @@ footer {
   align-items: flex-start;
 }
 
-/* Prominent Circular Avatar */
+/* Transparent Mascot Avatar */
 .capy-avatar-btn {
-  width: 76px;
-  height: 76px;
-  border-radius: 50%;
-  overflow: hidden;
-  border: 2px solid var(--accent);
-  box-shadow: 0 10px 30px rgba(0,0,0,0.7), 0 0 20px rgba(34,211,238,0.3);
+  width: 86px;
+  height: 86px;
+  border: none;
+  background: transparent;
   cursor: pointer;
-  background: #000;
   position: relative;
-  transition: transform 0.25s cubic-bezier(.2,.8,.2,1), box-shadow 0.25s;
+  transition: transform 0.3s cubic-bezier(.2,.8,.2,1);
   padding: 0;
   outline: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .capy-avatar-btn:hover {
-  transform: scale(1.08);
-  box-shadow: 0 14px 40px rgba(0,0,0,0.8), 0 0 30px rgba(34,211,238,0.5);
+  transform: scale(1.12) translateY(-6px);
 }
-.capy-avatar-btn video {
+.capy-glow-backdrop {
+  position: absolute;
+  width: 65px;
+  height: 65px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(34,211,238,0.4) 0%, rgba(34,211,238,0) 70%);
+  filter: blur(10px);
+  z-index: 1;
+  pointer-events: none;
+  animation: capyGlow 3s infinite ease-in-out;
+}
+@keyframes capyGlow {
+  0%, 100% { opacity: 0.4; transform: scale(0.95); }
+  50% { opacity: 0.85; transform: scale(1.15); }
+}
+.capy-avatar-img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  display: block;
-}
-.capy-pulse-ring {
-  position: absolute;
-  inset: -5px;
-  border-radius: 50%;
-  border: 2px solid var(--accent);
-  opacity: 0.6;
-  animation: capyPulse 2.4s infinite;
+  object-fit: contain;
+  position: relative;
+  z-index: 2;
+  filter: drop-shadow(0 10px 22px rgba(0,0,0,0.85)) drop-shadow(0 0 12px rgba(34,211,238,0.25));
   pointer-events: none;
-}
-@keyframes capyPulse {
-  0% { transform: scale(1); opacity: 0.7; }
-  70% { transform: scale(1.15); opacity: 0; }
-  100% { transform: scale(1.2); opacity: 0; }
 }
 
 /* Interactive Speech Bubble anchored to Capybara Head */
@@ -1739,10 +1742,10 @@ body[data-density="spacious"] { --density: 1.25; }
     </form>
   </div>
 
-  <!-- Prominent Circular Video Avatar -->
+  <!-- Transparent Mascot Button (Sem Fundo) -->
   <button class="capy-avatar-btn" id="capyAvatarBtn" title="Conversar com o assistente">
-    <div class="capy-pulse-ring"></div>
-    <video src="uploads/capivara.mp4" autoplay loop muted playsinline></video>
+    <div class="capy-glow-backdrop"></div>
+    <img src="uploads/capivara_sem_fundo.webp" alt="Capivara Assistente" class="capy-avatar-img" />
   </button>
 </div>
 
