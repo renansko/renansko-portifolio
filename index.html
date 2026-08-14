@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Renan Skonicezny Vilela — Full Stack Engineer | AI Systems • Laravel • AWS</title>
 <meta name="description" content="Portfólio de Renan Skonicezny Vilela — Engenheiro de Software Fullstack & IA Aplicada (UFPR). Especialista em Laravel, Vue, AWS, Sistemas Distribuídos e Agentes de IA." />
-<meta name="keywords" content="Renan Skonicezny Vilela, Full Stack, Software Engineer, Laravel, AI Systems, LLMs, AWS, Vue.js, PostgreSQL, Curitiba, CapiBot" />
+<meta name="keywords" content="Renan Skonicezny Vilela, Full Stack, Software Engineer, Laravel, AI Systems, LLMs, AWS, Vue.js, PostgreSQL, Curitiba" />
 <meta name="author" content="Renan Skonicezny Vilela" />
 
 <!-- OpenGraph / Social -->
@@ -877,62 +877,119 @@ footer {
 }
 
 /* =======================================================
-   CAPIBOT // CHATBOT WIDGET STYLES
+   CAPYBARA ASSISTANT // SPEECH BUBBLE INTERACTION
    ======================================================= */
-.capibot-fab {
+.capy-container {
   position: fixed;
-  bottom: 20px;
+  bottom: 24px;
   left: 24px;
-  z-index: 198;
+  z-index: 210;
   display: flex;
-  align-items: center;
-  gap: 10px;
-  background: var(--bg-elev);
-  border: 1px solid var(--line-bright);
-  padding: 6px 14px 6px 6px;
-  cursor: pointer;
-  box-shadow: 0 8px 30px rgba(0,0,0,0.5);
-  transition: all 0.25s cubic-bezier(.2,.8,.2,1);
-  font-family: var(--mono);
-  font-size: 12px;
-  color: var(--fg);
+  flex-direction: column;
+  align-items: flex-start;
 }
-.capibot-fab:hover {
-  border-color: var(--accent);
-  transform: translateY(-3px);
-  box-shadow: 0 12px 36px rgba(0,0,0,0.7), 0 0 15px rgba(34,211,238,0.2);
-}
-.capibot-avatar-thumb {
-  width: 38px;
-  height: 38px;
+
+/* Prominent Circular Avatar */
+.capy-avatar-btn {
+  width: 76px;
+  height: 76px;
   border-radius: 50%;
   overflow: hidden;
-  border: 1px solid var(--accent);
-  position: relative;
+  border: 2px solid var(--accent);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.7), 0 0 20px rgba(34,211,238,0.3);
+  cursor: pointer;
   background: #000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  position: relative;
+  transition: transform 0.25s cubic-bezier(.2,.8,.2,1), box-shadow 0.25s;
+  padding: 0;
+  outline: none;
 }
-.capibot-avatar-thumb video {
+.capy-avatar-btn:hover {
+  transform: scale(1.08);
+  box-shadow: 0 14px 40px rgba(0,0,0,0.8), 0 0 30px rgba(34,211,238,0.5);
+}
+.capy-avatar-btn video {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  display: block;
 }
-.capibot-fab-text {
-  display: flex;
+.capy-pulse-ring {
+  position: absolute;
+  inset: -5px;
+  border-radius: 50%;
+  border: 2px solid var(--accent);
+  opacity: 0.6;
+  animation: capyPulse 2.4s infinite;
+  pointer-events: none;
+}
+@keyframes capyPulse {
+  0% { transform: scale(1); opacity: 0.7; }
+  70% { transform: scale(1.15); opacity: 0; }
+  100% { transform: scale(1.2); opacity: 0; }
+}
+
+/* Interactive Speech Bubble anchored to Capybara Head */
+.capy-speech-bubble {
+  position: absolute;
+  bottom: 92px;
+  left: 0;
+  width: min(360px, calc(100vw - 48px));
+  background: rgba(18, 18, 18, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--accent);
+  border-radius: 14px;
+  padding: 16px 18px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.8), 0 0 30px rgba(34,211,238,0.2);
+  font-family: var(--mono);
+  color: var(--fg);
+  display: none;
   flex-direction: column;
-  text-align: left;
+  gap: 12px;
+  transform-origin: bottom left;
+  z-index: 220;
 }
-.capibot-fab-name {
-  font-weight: 600;
-  font-size: 12px;
-  letter-spacing: 0.05em;
+.capy-speech-bubble.open {
+  display: flex;
+  animation: bubblePop 0.25s cubic-bezier(.2,.8,.2,1) forwards;
+}
+@keyframes bubblePop {
+  0% { opacity: 0; transform: translateY(12px) scale(0.92); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Speech Bubble Tail (Triangle pointing to capybara) */
+.capy-speech-bubble::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 30px;
+  width: 14px;
+  height: 14px;
+  background: rgba(18, 18, 18, 0.95);
+  border-right: 1px solid var(--accent);
+  border-bottom: 1px solid var(--accent);
+  transform: rotate(45deg);
+}
+
+.capy-bubble-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px dashed var(--line-bright);
+  padding-bottom: 8px;
+}
+.capy-bubble-status {
+  font-size: 10px;
+  color: var(--accent);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
   display: flex;
   align-items: center;
   gap: 6px;
 }
-.capibot-fab-name .online-dot {
+.capy-bubble-status .dot {
   width: 6px;
   height: 6px;
   background: #4ade80;
@@ -940,347 +997,119 @@ footer {
   display: inline-block;
   animation: blink 2s infinite;
 }
-.capibot-fab-sub {
-  font-size: 10px;
-  color: var(--accent);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+.capy-bubble-actions {
+  display: flex;
+  gap: 6px;
 }
-
-/* Proactive Speech Bubble */
-.capibot-teaser {
-  position: fixed;
-  bottom: 80px;
-  left: 24px;
-  z-index: 197;
-  background: var(--bg-elev);
-  border: 1px solid var(--accent);
-  padding: 10px 14px;
-  font-family: var(--mono);
-  font-size: 11px;
-  color: var(--fg);
-  max-width: 260px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.6);
-  opacity: 0;
-  transform: translateY(10px);
-  transition: all 0.4s cubic-bezier(.2,.8,.2,1);
-  pointer-events: none;
-}
-.capibot-teaser.show {
-  opacity: 1;
-  transform: translateY(0);
-  pointer-events: auto;
-}
-.capibot-teaser::after {
-  content: '';
-  position: absolute;
-  bottom: -6px;
-  left: 24px;
-  width: 10px;
-  height: 10px;
-  background: var(--bg-elev);
-  border-right: 1px solid var(--accent);
-  border-bottom: 1px solid var(--accent);
-  transform: rotate(45deg);
-}
-.capibot-teaser .close-teaser {
-  background: none;
+.capy-bubble-btn {
+  background: transparent;
   border: none;
   color: var(--fg-muted);
-  float: right;
-  margin-left: 8px;
+  font-family: var(--mono);
+  font-size: 14px;
   cursor: pointer;
-  font-size: 12px;
+  padding: 2px 6px;
+  transition: color 0.2s;
 }
-
-/* Chat Window Modal */
-.capibot-modal {
-  position: fixed;
-  bottom: 84px;
-  left: 24px;
-  width: min(400px, calc(100vw - 48px));
-  height: min(580px, calc(100vh - 120px));
-  background: var(--bg-elev);
-  border: 1px solid var(--line-bright);
-  box-shadow: 0 20px 60px rgba(0,0,0,0.8), 0 0 30px rgba(0,0,0,0.5);
-  z-index: 205;
-  display: none;
-  flex-direction: column;
-  overflow: hidden;
-  transition: all 0.3s cubic-bezier(.2,.8,.2,1);
-}
-.capibot-modal.open {
-  display: flex;
-  animation: popIn 0.25s cubic-bezier(.2,.8,.2,1) forwards;
-}
-@keyframes popIn {
-  0% { opacity: 0; transform: translateY(15px) scale(0.96); }
-  100% { opacity: 1; transform: translateY(0) scale(1); }
-}
-
-/* Chat Header */
-.capibot-header {
-  padding: 14px 18px;
-  background: var(--bg-soft);
-  border-bottom: 1px solid var(--line-bright);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-.capibot-header-profile {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-.capibot-video-frame {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  overflow: hidden;
-  border: 2px solid var(--accent);
-  box-shadow: 0 0 10px rgba(34,211,238,0.4);
-  background: #000;
-  flex-shrink: 0;
-}
-.capibot-video-frame video {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-.capibot-header-meta h4 {
-  font-family: var(--mono);
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 0.05em;
+.capy-bubble-btn:hover {
   color: var(--fg);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.capibot-header-meta p {
-  font-family: var(--mono);
-  font-size: 10px;
-  color: var(--fg-muted);
-  letter-spacing: 0.05em;
-}
-.capibot-header-meta .status-badge {
-  color: #4ade80;
-  font-weight: 500;
-}
-.capibot-header-actions {
-  display: flex;
-  gap: 6px;
-}
-.capibot-header-btn {
-  background: transparent;
-  border: 1px solid var(--line-bright);
-  color: var(--fg-muted);
-  font-family: var(--mono);
-  font-size: 12px;
-  width: 28px;
-  height: 28px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s;
-}
-.capibot-header-btn:hover {
-  color: var(--fg);
-  border-color: var(--accent);
 }
 
-/* Chat Messages Area */
-.capibot-messages {
-  flex: 1;
+/* Text Area inside bubble */
+.capy-bubble-text {
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--fg);
+  max-height: 220px;
   overflow-y: auto;
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  font-family: var(--mono);
-  font-size: 12px;
-  background: var(--bg);
+  padding-right: 4px;
 }
-.capibot-messages::-webkit-scrollbar {
-  width: 5px;
-}
-.capibot-messages::-webkit-scrollbar-thumb {
-  background: var(--line-bright);
-}
-
-.chat-msg {
-  display: flex;
-  flex-direction: column;
-  max-width: 88%;
-  line-height: 1.5;
-  animation: msgFade 0.25s ease-out;
-}
-@keyframes msgFade {
-  from { opacity: 0; transform: translateY(6px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.chat-msg.bot {
-  align-self: flex-start;
-}
-.chat-msg.user {
-  align-self: flex-end;
-}
-.chat-msg .bubble {
-  padding: 10px 14px;
-  border-radius: 4px;
-  border: 1px solid var(--line-bright);
-}
-.chat-msg.bot .bubble {
-  background: var(--bg-elev);
-  color: var(--fg);
-  border-left: 2px solid var(--accent);
-}
-.chat-msg.user .bubble {
-  background: var(--accent);
-  color: #000;
-  font-weight: 500;
-  border-color: var(--accent);
-}
-.chat-msg .meta {
-  font-size: 9px;
-  color: var(--fg-dim);
-  margin-top: 4px;
-  letter-spacing: 0.05em;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-.chat-msg.user .meta {
-  align-self: flex-end;
-  color: var(--fg-muted);
-}
-.chat-msg .bubble strong {
-  color: var(--fg);
+.capy-bubble-text::-webkit-scrollbar { width: 4px; }
+.capy-bubble-text::-webkit-scrollbar-thumb { background: var(--line-bright); }
+.capy-bubble-text strong {
+  color: var(--accent);
   font-weight: 600;
 }
-.chat-msg.user .bubble strong {
-  color: #000;
-}
-.chat-msg .bubble a {
+.capy-bubble-text a {
   color: var(--accent);
   text-decoration: underline;
 }
 
-/* Typing Indicator */
-.chat-typing {
-  align-self: flex-start;
-  display: none;
-  background: var(--bg-elev);
-  border: 1px solid var(--line-bright);
-  border-left: 2px solid var(--accent);
-  padding: 8px 14px;
-  gap: 4px;
-  align-items: center;
-}
-.chat-typing.show {
+/* Interactive Topic Options / Pills */
+.capy-bubble-topics {
   display: flex;
-}
-.chat-typing span {
-  width: 5px;
-  height: 5px;
-  background: var(--accent);
-  border-radius: 50%;
-  animation: typingBounce 1.2s infinite ease-in-out;
-}
-.chat-typing span:nth-child(2) { animation-delay: 0.2s; }
-.chat-typing span:nth-child(3) { animation-delay: 0.4s; }
-@keyframes typingBounce {
-  0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
-  40% { transform: scale(1.2); opacity: 1; }
-}
-
-/* Quick Suggestion Chips */
-.capibot-chips {
-  padding: 8px 16px;
-  background: var(--bg-soft);
-  border-top: 1px solid var(--line-bright);
-  display: flex;
+  flex-wrap: wrap;
   gap: 6px;
-  overflow-x: auto;
-  white-space: nowrap;
+  padding-top: 8px;
+  border-top: 1px dashed var(--line-bright);
 }
-.capibot-chips::-webkit-scrollbar { height: 3px; }
-.capibot-chips::-webkit-scrollbar-thumb { background: var(--line-bright); }
-.capibot-chip {
-  background: var(--bg-elev);
+.capy-topic-pill {
+  background: var(--bg-soft);
   border: 1px solid var(--line-bright);
-  color: var(--fg-muted);
+  color: var(--fg);
   font-family: var(--mono);
   font-size: 10px;
   padding: 5px 10px;
   cursor: pointer;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.04em;
   transition: all 0.2s;
-  flex-shrink: 0;
+  border-radius: 2px;
 }
-.capibot-chip:hover {
+.capy-topic-pill:hover {
   border-color: var(--accent);
-  color: var(--fg);
-  background: rgba(34,211,238,0.08);
+  color: var(--bg);
+  background: var(--accent);
+  font-weight: 600;
 }
 
-/* Chat Input Bar */
-.capibot-input-bar {
-  padding: 10px 14px;
-  background: var(--bg-elev);
-  border-top: 1px solid var(--line-bright);
+/* Mini question input */
+.capy-bubble-input {
   display: flex;
-  gap: 8px;
+  gap: 6px;
+  margin-top: 4px;
 }
-.capibot-input-bar input {
+.capy-bubble-input input {
   flex: 1;
   background: var(--bg);
   border: 1px solid var(--line-bright);
   color: var(--fg);
   font-family: var(--mono);
-  font-size: 12px;
-  padding: 10px 12px;
+  font-size: 11px;
+  padding: 6px 10px;
   outline: none;
   transition: border-color 0.2s;
 }
-.capibot-input-bar input:focus {
+.capy-bubble-input input:focus {
   border-color: var(--accent);
 }
-.capibot-input-bar button {
-  background: var(--fg);
-  color: var(--bg);
-  border: none;
-  font-family: var(--mono);
-  font-size: 13px;
-  padding: 0 16px;
-  cursor: pointer;
-  transition: all 0.2s;
-  font-weight: 600;
-}
-.capibot-input-bar button:hover {
+.capy-bubble-input button {
   background: var(--accent);
   color: #000;
+  border: none;
+  font-family: var(--mono);
+  font-size: 12px;
+  padding: 0 12px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: opacity 0.2s;
+}
+.capy-bubble-input button:hover {
+  opacity: 0.85;
 }
 
 @media (max-width: 600px) {
-  .capibot-modal {
-    left: 12px;
-    right: 12px;
-    bottom: 12px;
-    width: calc(100vw - 24px);
-    height: 75vh;
-    max-height: 500px;
-  }
-  .capibot-fab {
+  .capy-container {
     left: 16px;
     bottom: 16px;
   }
-  .capibot-teaser {
-    left: 16px;
-    bottom: 74px;
+  .capy-avatar-btn {
+    width: 66px;
+    height: 66px;
+  }
+  .capy-speech-bubble {
+    width: calc(100vw - 32px);
+    bottom: 80px;
+    left: 0;
   }
 }
 
@@ -1518,8 +1347,8 @@ body[data-density="spacious"] { --density: 1.25; }
 <!-- MARQUEE -->
 <div class="marquee">
   <div class="marquee-track">
-    <span>LARAVEL</span><span>CAPIBOT AI</span><span>AWS</span><span>VUE 3</span><span>NUXT</span><span>POSTGRESQL</span><span>RABBITMQ</span><span>LLMS & RAG</span><span>TERRAFORM</span><span>DOCKER</span><span>TYPESCRIPT</span><span>NODE.JS</span><span>PYTHON</span><span>RUST</span><span>OPEN FINANCE</span><span>DDD</span><span>TDD</span>
-    <span>LARAVEL</span><span>CAPIBOT AI</span><span>AWS</span><span>VUE 3</span><span>NUXT</span><span>POSTGRESQL</span><span>RABBITMQ</span><span>LLMS & RAG</span><span>TERRAFORM</span><span>DOCKER</span><span>TYPESCRIPT</span><span>NODE.JS</span><span>PYTHON</span><span>RUST</span><span>OPEN FINANCE</span><span>DDD</span><span>TDD</span>
+    <span>LARAVEL</span><span>AI AGENTS</span><span>AWS</span><span>VUE 3</span><span>NUXT</span><span>POSTGRESQL</span><span>RABBITMQ</span><span>LLMS & RAG</span><span>TERRAFORM</span><span>DOCKER</span><span>TYPESCRIPT</span><span>NODE.JS</span><span>PYTHON</span><span>RUST</span><span>OPEN FINANCE</span><span>DDD</span><span>TDD</span>
+    <span>LARAVEL</span><span>AI AGENTS</span><span>AWS</span><span>VUE 3</span><span>NUXT</span><span>POSTGRESQL</span><span>RABBITMQ</span><span>LLMS & RAG</span><span>TERRAFORM</span><span>DOCKER</span><span>TYPESCRIPT</span><span>NODE.JS</span><span>PYTHON</span><span>RUST</span><span>OPEN FINANCE</span><span>DDD</span><span>TDD</span>
   </div>
 </div>
 
@@ -1875,72 +1704,46 @@ body[data-density="spacious"] { --density: 1.25; }
 <div class="toast-msg" id="toastMsg">✓ Copiado para a área de transferência</div>
 
 <!-- =======================================================
-     CAPIBOT WIDGET MARKUP
+     CAPYBARA ASSISTANT WITH SPEECH BUBBLE
      ======================================================= -->
-<!-- Proactive Teaser -->
-<div class="capibot-teaser" id="capiTeaser">
-  <button class="close-teaser" id="closeTeaser">×</button>
-  <span data-i18n="capi_teaser">Psiu! Sou a <strong>CapiBot</strong> 🦫. Quer conhecer a stack ou projetos do Renan?</span>
-</div>
+<div class="capy-container">
+  <!-- Interactive Speech Bubble anchored to Capybara Head -->
+  <div class="capy-speech-bubble" id="capyBubble">
+    <div class="capy-bubble-top">
+      <span class="capy-bubble-status"><span class="dot"></span> IA Assistente</span>
+      <div class="capy-bubble-actions">
+        <button class="capy-bubble-btn" id="capyReset" title="Reiniciar">↺</button>
+        <button class="capy-bubble-btn" id="capyClose" title="Fechar">×</button>
+      </div>
+    </div>
 
-<!-- Floating Action Button -->
-<div class="capibot-fab" id="capiFab" title="Abrir CapiBot IA Assistant">
-  <div class="capibot-avatar-thumb">
+    <!-- Speech content -->
+    <div class="capy-bubble-text" id="capyText">
+      Olá! Sou o assistente virtual deste portfólio. O que você gostaria de saber sobre o <strong>Renan</strong>?
+    </div>
+
+    <!-- Clickable Topics -->
+    <div class="capy-bubble-topics" id="capyTopics">
+      <button class="capy-topic-pill" data-topic="stack">⚡ Stack Principal</button>
+      <button class="capy-topic-pill" data-topic="ia">🧠 IA sem Alucinações</button>
+      <button class="capy-topic-pill" data-topic="50m">🚀 50M+ Mensagens</button>
+      <button class="capy-topic-pill" data-topic="projetos">💼 Cases & Projetos</button>
+      <button class="capy-topic-pill" data-topic="ufpr">🎓 Pós UFPR</button>
+      <button class="capy-topic-pill" data-topic="contato">📞 Falar com o Renan</button>
+    </div>
+
+    <!-- Mini input for free queries -->
+    <form class="capy-bubble-input" id="capyForm">
+      <input type="text" id="capyInput" placeholder="Ou digite sua dúvida..." autocomplete="off" />
+      <button type="submit">➤</button>
+    </form>
+  </div>
+
+  <!-- Prominent Circular Video Avatar -->
+  <button class="capy-avatar-btn" id="capyAvatarBtn" title="Conversar com o assistente">
+    <div class="capy-pulse-ring"></div>
     <video src="uploads/capivara.mp4" autoplay loop muted playsinline></video>
-  </div>
-  <div class="capibot-fab-text">
-    <span class="capibot-fab-name">CapiBot <span class="online-dot"></span></span>
-    <span class="capibot-fab-sub">AI ASSISTANT</span>
-  </div>
-</div>
-
-<!-- Chat Modal Window -->
-<div class="capibot-modal" id="capiModal">
-  <div class="capibot-header">
-    <div class="capibot-header-profile">
-      <div class="capibot-video-frame">
-        <video src="uploads/capivara.mp4" autoplay loop muted playsinline></video>
-      </div>
-      <div class="capibot-header-meta">
-        <h4>CapiBot // RSV.AI <span style="font-size:11px;">🦫</span></h4>
-        <p><span class="status-badge">● Online</span> • Curitiba Engine v2.0</p>
-      </div>
-    </div>
-    <div class="capibot-header-actions">
-      <button class="capibot-header-btn" id="capiClear" title="Reiniciar conversa">↺</button>
-      <button class="capibot-header-btn" id="capiClose" title="Fechar">×</button>
-    </div>
-  </div>
-
-  <!-- Messages List -->
-  <div class="capibot-messages" id="capiMessages">
-    <div class="chat-msg bot">
-      <div class="bubble" data-i18n="capi_welcome">
-        Olá! Eu sou a <strong>CapiBot</strong> 🦫, a IA mascote de Curitiba treinada em todo o histórico e competências do <strong>Renan Skonicezny Vilela</strong>.<br/><br/>
-        Como posso te ajudar a conhecer o trabalho dele hoje?
-      </div>
-      <div class="meta"><span>CapiBot</span> • <span>Agora</span></div>
-    </div>
-    <div class="chat-typing" id="capiTyping">
-      <span></span><span></span><span></span>
-    </div>
-  </div>
-
-  <!-- Quick Chips -->
-  <div class="capibot-chips" id="capiChips">
-    <button class="capibot-chip" data-q="stack">⚡ Stack Principal</button>
-    <button class="capibot-chip" data-q="ia">🧠 IA & Alucinações</button>
-    <button class="capibot-chip" data-q="50m">🚀 50M+ Mensagens</button>
-    <button class="capibot-chip" data-q="projetos">💼 Projetos</button>
-    <button class="capibot-chip" data-q="ufpr">🎓 Pós UFPR</button>
-    <button class="capibot-chip" data-q="contato">📞 Contatos</button>
-  </div>
-
-  <!-- Input Bar -->
-  <form class="capibot-input-bar" id="capiForm">
-    <input type="text" id="capiInput" placeholder="Pergunte qualquer coisa..." autocomplete="off" />
-    <button type="submit" id="capiSend">➤</button>
-  </form>
+  </button>
 </div>
 
 <!-- FOOTER -->
@@ -2027,9 +1830,7 @@ const i18n = {
     cta_kicker: 'VAMOS CONSTRUIR ALGO INCRÍVEL',
     cta_title: 'Pronto para o <em>próximo desafio</em><br/>em <em>Fullstack</em>, <em>Cloud</em> & <em>IA</em>.',
     cta_btn1: 'Enviar email →', cta_btn2: 'Download CV (PDF)',
-    footer_built: 'ENGENHARIA DE SOFTWARE & INTELIGÊNCIA ARTIFICIAL',
-    capi_teaser: 'Psiu! Sou a <strong>CapiBot</strong> 🦫. Quer conhecer a stack ou projetos do Renan?',
-    capi_welcome: 'Olá! Eu sou a <strong>CapiBot</strong> 🦫, a IA mascote de Curitiba treinada em todo o histórico e competências do <strong>Renan Skonicezny Vilela</strong>.<br/><br/>Como posso te ajudar a conhecer o trabalho dele hoje?'
+    footer_built: 'ENGENHARIA DE SOFTWARE & INTELIGÊNCIA ARTIFICIAL'
   },
   en: {
     brand: 'RSV / DEV',
@@ -2067,9 +1868,7 @@ const i18n = {
     cta_kicker: 'LET\'S BUILD SOMETHING EXTRAORDINARY',
     cta_title: 'Ready for the <em>next challenge</em><br/>in <em>Fullstack</em>, <em>Cloud</em> & <em>AI</em>.',
     cta_btn1: 'Send email →', cta_btn2: 'Download CV (PDF)',
-    footer_built: 'SOFTWARE ENGINEERING & ARTIFICIAL INTELLIGENCE',
-    capi_teaser: 'Hey! I\'m <strong>CapiBot</strong> 🦫. Want to explore Renan\'s stack or projects?',
-    capi_welcome: 'Hi! I\'m <strong>CapiBot</strong> 🦫, Curitiba\'s AI mascot trained on <strong>Renan Skonicezny Vilela\'s</strong> complete engineering background.<br/><br/>How can I help you explore his work today?'
+    footer_built: 'SOFTWARE ENGINEERING & ARTIFICIAL INTELLIGENCE'
   }
 };
 
@@ -2214,220 +2013,138 @@ document.getElementById('tweaksClose').addEventListener('click', () => panel.cla
 fab.addEventListener('click', () => panel.classList.toggle('open'));
 
 // =======================================================
-// CAPIBOT CHAT ENGINE & KNOWLEDGE BASE
+// CAPYBARA SPEECH BUBBLE LOGIC & KNOWLEDGE BASE
 // =======================================================
-const capiFab = document.getElementById('capiFab');
-const capiModal = document.getElementById('capiModal');
-const capiClose = document.getElementById('capiClose');
-const capiClear = document.getElementById('capiClear');
-const capiMessages = document.getElementById('capiMessages');
-const capiTyping = document.getElementById('capiTyping');
-const capiForm = document.getElementById('capiForm');
-const capiInput = document.getElementById('capiInput');
-const capiTeaser = document.getElementById('capiTeaser');
-const closeTeaser = document.getElementById('closeTeaser');
+const capyAvatarBtn = document.getElementById('capyAvatarBtn');
+const capyBubble = document.getElementById('capyBubble');
+const capyClose = document.getElementById('capyClose');
+const capyReset = document.getElementById('capyReset');
+const capyText = document.getElementById('capyText');
+const capyTopics = document.getElementById('capyTopics');
+const capyForm = document.getElementById('capyForm');
+const capyInput = document.getElementById('capyInput');
 
-// Show proactive teaser after 3.5s
-setTimeout(() => {
-  if (!capiModal.classList.contains('open')) {
-    capiTeaser.classList.add('show');
+const DIALOG_KNOWLEDGE = {
+  pt: {
+    welcome: 'Olá! Sou o assistente virtual deste portfólio. O que você gostaria de saber sobre o <strong>Renan</strong>?',
+    stack: `O Renan atua como <strong>Full Stack Engineer</strong> com domínio completo:<br/><br/>
+    • <strong>Back-End:</strong> PHP/Laravel, Node.js, TypeScript, Python, C# e Rust.<br/>
+    • <strong>Front-End:</strong> Vue 3, Nuxt, React, Next.js, Flutter e Tailwind.<br/>
+    • <strong>Cloud & DevOps:</strong> AWS (ECS, RDS, Lambda), Terraform, Docker, Vultr, Cloudflare e NGINX.<br/>
+    • <strong>Bancos & Filas:</strong> PostgreSQL, MySQL, Redis, RabbitMQ e WebSockets.`,
+    ia: `Em <strong>Inteligência Artificial</strong>, o Renan é especialista em agentes corporativos robustos:<br/><br/>
+    • Desenvolveu <strong>Agentes de IA Inbound/Outbound</strong> com mecanismos de autoavaliação, validação de confiança e retroalimentação de contexto.<br/>
+    • <strong>Resultado:</strong> Alcançou <strong>zero ocorrências de alucinação reportadas</strong> em produção.<br/>
+    • Pós-graduando em <strong>IA Aplicada na UFPR</strong>.`,
+    '50m': `🚀 <strong>Alta Performance em Big Data:</strong><br/><br/>
+    Em uma base com mais de <strong>50 milhões de mensagens</strong> de WhatsApp/Meta APIs, o Renan estruturou paginação por cursor e otimização de índices no PostgreSQL, reduzindo o tempo de consulta de <strong>300 para 26 segundos (-91%)</strong>!`,
+    projetos: `Principais Cases de Sucesso:<br/><br/>
+    1. <strong>Cnpjbiz CRM & AI:</strong> Agentes de IA e 50M+ msgs.<br/>
+    2. <strong>Multi-Tenant Engine:</strong> Plataforma de páginas dinâmicas com NGINX e Cloudflare.<br/>
+    3. <strong>Boltech ERP:</strong> ERP automotivo em Laravel, DDD, TDD e integração Itaú.<br/>
+    4. <strong>BTG Pactual Open Finance:</strong> AWS Terraform e conformidade BACEN.<br/>
+    5. <strong>Tecnofit Platform:</strong> White-label e sincronização de dados.`,
+    ufpr: `🎓 <strong>Formação Acadêmica:</strong><br/><br/>
+    • <strong>Pós-Graduação:</strong> IA Aplicada — <strong>UFPR</strong> (2025/2026, em andamento)<br/>
+    • <strong>Graduação:</strong> Engenharia da Computação — <strong>UFPR</strong> (2020/2024)<br/>
+    • <strong>Técnico:</strong> Técnico Químico — <strong>SENAI</strong> (2018/2019)`,
+    contato: `Fale diretamente com o Renan:<br/><br/>
+    • <strong>E-mail:</strong> <a href="mailto:renansko@gmail.com">renansko@gmail.com</a><br/>
+    • <strong>WhatsApp:</strong> <a href="tel:+5541999088675">+55 (41) 99908-8675</a><br/>
+    • <strong>LinkedIn:</strong> <a href="https://www.linkedin.com/in/renan-skonicezny-vilela/" target="_blank">/in/renan-skonicezny-vilela</a><br/>
+    • <strong>Currículo:</strong> <a href="uploads/Curriculo_2026.pdf" download>Baixar PDF</a>`,
+    fallback: `Excelente pergunta! O Renan pode te dar todos os detalhes específicos. Você pode enviar um e-mail para <a href="mailto:renansko@gmail.com">renansko@gmail.com</a> ou falar no WhatsApp <a href="tel:+5541999088675">+55 (41) 99908-8675</a>!`
+  },
+  en: {
+    welcome: 'Hi! I am the virtual assistant for this portfolio. What would you like to explore about <strong>Renan</strong>?',
+    stack: `Renan is a <strong>Full Stack Engineer</strong> with strong expertise:<br/><br/>
+    • <strong>Back-End:</strong> PHP/Laravel, Node.js, TypeScript, Python, C#, Rust.<br/>
+    • <strong>Front-End:</strong> Vue 3, Nuxt, React, Next.js, Flutter, Tailwind.<br/>
+    • <strong>Cloud & DevOps:</strong> AWS (ECS, RDS, Lambda), Terraform, Docker, Vultr, Cloudflare, NGINX.<br/>
+    • <strong>Databases & Queues:</strong> PostgreSQL, MySQL, Redis, RabbitMQ, WebSockets.`,
+    ia: `In <strong>Applied AI</strong>, Renan builds zero-hallucination enterprise systems:<br/><br/>
+    • Built <strong>Inbound/Outbound AI Agents</strong> with automated self-evaluation, confidence validation, and context feedback loops.<br/>
+    • <strong>Result:</strong> Zero reported quality issues in production.<br/>
+    • Currently pursuing a <strong>Postgrad in Applied AI at UFPR</strong>.`,
+    '50m': `🚀 <strong>Scale & Query Optimization:</strong><br/><br/>
+    On a dataset of over <strong>50 Million messages</strong>, Renan engineered cursor-based pagination and index tuning in PostgreSQL, cutting query latency from <strong>300s down to 26s (-91%)</strong>!`,
+    projetos: `Key Case Studies:<br/><br/>
+    1. <strong>Cnpjbiz CRM & AI:</strong> Autonomous agents & 50M+ msgs.<br/>
+    2. <strong>Multi-Tenant Engine:</strong> NGINX, Vultr & Cloudflare routing.<br/>
+    3. <strong>Boltech ERP:</strong> Telematics ERP with Laravel, DDD, TDD & Itaú banking.<br/>
+    4. <strong>BTG Pactual Open Finance:</strong> AWS Terraform & BACEN compliance.<br/>
+    5. <strong>Tecnofit Suite:</strong> High-performance data pipelines in Flutter.`,
+    ufpr: `🎓 <strong>Education:</strong><br/><br/>
+    • <strong>Postgraduate:</strong> Applied AI — <strong>UFPR</strong> (2025/2026, Ongoing)<br/>
+    • <strong>Bachelor's:</strong> Computer Engineering — <strong>UFPR</strong> (2020/2024)<br/>
+    • <strong>Technical:</strong> Chemical Technician — <strong>SENAI</strong> (2018/2019)`,
+    contato: `Connect with Renan:<br/><br/>
+    • <strong>Email:</strong> <a href="mailto:renansko@gmail.com">renansko@gmail.com</a><br/>
+    • <strong>WhatsApp:</strong> <a href="tel:+5541999088675">+55 (41) 99908-8675</a><br/>
+    • <strong>LinkedIn:</strong> <a href="https://www.linkedin.com/in/renan-skonicezny-vilela/" target="_blank">/in/renan-skonicezny-vilela</a><br/>
+    • <strong>Resume:</strong> <a href="uploads/Curriculo_2026.pdf" download>Download PDF</a>`,
+    fallback: `Great question! Renan can share more details directly. Reach out via email at <a href="mailto:renansko@gmail.com">renansko@gmail.com</a> or WhatsApp at <a href="tel:+5541999088675">+55 (41) 99908-8675</a>!`
   }
-}, 3500);
-
-closeTeaser.addEventListener('click', (e) => {
-  e.stopPropagation();
-  capiTeaser.classList.remove('show');
-});
-
-capiFab.addEventListener('click', () => {
-  capiTeaser.classList.remove('show');
-  capiModal.classList.toggle('open');
-  if (capiModal.classList.contains('open')) {
-    capiInput.focus();
-  }
-});
-
-capiClose.addEventListener('click', () => {
-  capiModal.classList.remove('open');
-});
-
-capiClear.addEventListener('click', () => {
-  capiMessages.querySelectorAll('.chat-msg:not(:first-child)').forEach(m => m.remove());
-});
-
-// Knowledge Base Data
-const CAPI_KNOWLEDGE = {
-  pt: [
-    {
-      keys: ['stack', 'tecnologia', 'linguagem', 'framework', 'laravel', 'php', 'vue', 'node', 'typescript', 'python', 'rust', 'c#', 'react', 'docker', 'aws', 'terraform'],
-      response: `O <strong>Renan</strong> domina uma stack fullstack completa e moderna:<br/><br/>
-      • <strong>Back-End:</strong> PHP/Laravel (Avançado), Node.js, TypeScript, Python, C#/.NET e Rust.<br/>
-      • <strong>Front-End:</strong> Vue 3, Nuxt, React, Next.js, Flutter e Tailwind.<br/>
-      • <strong>Cloud & DevOps:</strong> AWS (ECS, RDS, S3, Lambda), Terraform, Docker, Vultr, Cloudflare e NGINX.<br/>
-      • <strong>Bancos & Filas:</strong> PostgreSQL, MySQL, Redis, RabbitMQ, DynamoDB e WebSockets.`
-    },
-    {
-      keys: ['ia', 'ai', 'alucinacao', 'alucinações', 'alucinação', 'rag', 'agente', 'agentes', 'llm', 'llms', 'prompt', 'confiança'],
-      response: `Na área de <strong>Inteligência Artificial</strong>, o Renan é especialista em soluções corporativas sem alucinação:<br/><br/>
-      • Desenvolveu <strong>Agentes de IA Inbound/Outbound</strong> com mecanismos de autoavaliação, validação de confiança e retroalimentação de contexto via LLMs.<br/>
-      • <strong>Resultado:</strong> Alcançou <strong>zero ocorrências reportadas</strong> de chamados relacionados a qualidade das respostas.<br/>
-      • Cursa <strong>Pós-Graduação em IA Aplicada na UFPR</strong>.`
-    },
-    {
-      keys: ['50m', '50 milhões', '50 milhoes', 'volume', 'otimizacao', 'otimização', 'queries', 'performance', 'mensagens'],
-      response: `🚀 <strong>Grande Conquista de Performance:</strong><br/><br/>
-      Em uma base de dados superior a <strong>50 milhões de mensagens</strong> (WhatsApp/Meta APIs), o Renan implementou paginação por cursor e otimização avançada de índices no PostgreSQL, reduzindo consultas críticas de <strong>300 segundos para apenas 26 segundos (-91% de tempo)</strong>!`
-    },
-    {
-      keys: ['projeto', 'projetos', 'cases', 'portfolio', 'trabalhos', 'multi-tenant', 'boltech', 'teros', 'tecnofit', 'cnpjbiz'],
-      response: `Os principais cases do Renan são:<br/><br/>
-      1. <strong>Cnpjbiz CRM & AI Agents:</strong> Agentes autônomos e 50M+ msgs processadas.<br/>
-      2. <strong>Multi-Tenant Landing Engine:</strong> Plataforma de páginas dinâmicas com NGINX, Vultr e Cloudflare.<br/>
-      3. <strong>Boltech ERP:</strong> ERP de rastreamento veicular com Laravel, DDD, TDD e integração Itaú.<br/>
-      4. <strong>BTG Pactual Open Finance:</strong> Infra AWS com Terraform e conformidade BACEN.<br/>
-      5. <strong>Tecnofit Suite:</strong> Otimização massiva e sistemas white-label em Flutter.`
-    },
-    {
-      keys: ['open finance', 'btg', 'pactual', 'bacen', 'banco central'],
-      response: `No projeto do <strong>BTG Pactual / Open Finance</strong> (pela Teros), o Renan estruturou a infraestrutura AWS com Terraform, homologou APIs de alta segurança com o <strong>BACEN</strong> e atuou na observabilidade e rastreabilidade de autenticação/autorização mTLS em microsserviços C#.`
-    },
-    {
-      keys: ['ufpr', 'formacao', 'formação', 'faculdade', 'estudo', 'pos', 'pós', 'graduacao', 'graduação', 'senai'],
-      response: `🎓 <strong>Formação Acadêmica do Renan:</strong><br/><br/>
-      • <strong>Pós-Graduação:</strong> Inteligência Artificial Aplicada — <strong>UFPR</strong> (2025/2026, Cursando)<br/>
-      • <strong>Graduação:</strong> Engenharia da Computação — <strong>UFPR</strong> (2020/2024, Concluído)<br/>
-      • <strong>Técnico:</strong> Técnico Químico — <strong>SENAI</strong> (2018/2019, Concluído)`
-    },
-    {
-      keys: ['contato', 'email', 'e-mail', 'telefone', 'whatsapp', 'linkedin', 'github', 'contratar', 'cv', 'curriculo', 'currículo'],
-      response: `Você pode entrar em contato direto com o Renan:<br/><br/>
-      • <strong>E-mail:</strong> <a href="mailto:renansko@gmail.com">renansko@gmail.com</a><br/>
-      • <strong>WhatsApp / Tel:</strong> <a href="tel:+5541999088675">+55 (41) 99908-8675</a><br/>
-      • <strong>LinkedIn:</strong> <a href="https://www.linkedin.com/in/renan-skonicezny-vilela/" target="_blank">/in/renan-skonicezny-vilela</a><br/>
-      • <strong>Currículo PDF:</strong> <a href="uploads/Curriculo_2026.pdf" download>Baixar PDF</a>`
-    },
-    {
-      keys: ['curitiba', 'capivara', 'onde mora', 'cidade', 'localizacao', 'localização', 'barigui'],
-      response: `O Renan mora em <strong>Curitiba - PR</strong> (a capital mais verde e capital oficial das Capivaras! 🦫💚). Por isso eu fui escolhida como a assistente oficial de IA do portfólio dele!`
-    }
-  ],
-  en: [
-    {
-      keys: ['stack', 'technology', 'technologies', 'skills', 'laravel', 'php', 'vue', 'node', 'typescript', 'python', 'rust', 'c#', 'react', 'aws', 'docker'],
-      response: `<strong>Renan's</strong> primary engineering stack:<br/><br/>
-      • <strong>Back-End:</strong> PHP/Laravel (Advanced), Node.js, TypeScript, Python, C#/.NET, Rust.<br/>
-      • <strong>Front-End:</strong> Vue 3, Nuxt, React, Next.js, Flutter, Tailwind.<br/>
-      • <strong>Cloud & DevOps:</strong> AWS (ECS, RDS, S3, Lambda), Terraform, Docker, Vultr, Cloudflare, NGINX.<br/>
-      • <strong>Databases & Queues:</strong> PostgreSQL, MySQL, Redis, RabbitMQ, DynamoDB, WebSockets.`
-    },
-    {
-      keys: ['ai', 'ia', 'hallucination', 'hallucinations', 'rag', 'agents', 'agent', 'llm', 'llms', 'prompt'],
-      response: `In <strong>Applied AI</strong>, Renan specializes in enterprise-grade zero-hallucination agents:<br/><br/>
-      • Built <strong>Inbound/Outbound AI Agents</strong> with automated self-evaluation, confidence validation, and context feedback loops.<br/>
-      • <strong>Result:</strong> Zero reported quality incidents in production.<br/>
-      • Currently pursuing a <strong>Postgrad in Applied AI at UFPR</strong>.`
-    },
-    {
-      keys: ['50m', 'performance', 'query', 'queries', 'optimization', 'speed', 'messages'],
-      response: `🚀 <strong>Scale & Performance Achievement:</strong><br/><br/>
-      On a database with over <strong>50 Million messages</strong>, Renan engineered cursor-based pagination and index tuning in PostgreSQL, slating critical query latency from <strong>300s down to 26s (-91%)</strong>!`
-    },
-    {
-      keys: ['project', 'projects', 'cases', 'portfolio', 'experience', 'cnpjbiz', 'boltech', 'teros', 'btg'],
-      response: `Key Case Studies by Renan:<br/><br/>
-      1. <strong>Cnpjbiz CRM & AI Agents:</strong> High-volume AI pipelines & 50M+ msgs.<br/>
-      2. <strong>Multi-Tenant Landing Engine:</strong> NGINX, Vultr & Cloudflare automated routing.<br/>
-      3. <strong>Boltech ERP:</strong> Telematics ERP with Laravel, DDD, TDD & Itaú banking.<br/>
-      4. <strong>BTG Pactual Open Finance:</strong> AWS Terraform infra & BACEN compliance.<br/>
-      5. <strong>Tecnofit Platform Suite:</strong> White-label app data engine in Flutter.`
-    },
-    {
-      keys: ['contact', 'email', 'phone', 'whatsapp', 'linkedin', 'github', 'hire', 'resume', 'cv'],
-      response: `Connect with Renan directly:<br/><br/>
-      • <strong>Email:</strong> <a href="mailto:renansko@gmail.com">renansko@gmail.com</a><br/>
-      • <strong>WhatsApp:</strong> <a href="tel:+5541999088675">+55 (41) 99908-8675</a><br/>
-      • <strong>LinkedIn:</strong> <a href="https://www.linkedin.com/in/renan-skonicezny-vilela/" target="_blank">/in/renan-skonicezny-vilela</a><br/>
-      • <strong>Resume:</strong> <a href="uploads/Curriculo_2026.pdf" download>Download PDF</a>`
-    },
-    {
-      keys: ['ufpr', 'education', 'degree', 'college', 'university'],
-      response: `🎓 <strong>Education & Degrees:</strong><br/><br/>
-      • <strong>Postgraduate:</strong> Applied Artificial Intelligence — <strong>UFPR</strong> (2025/2026, Ongoing)<br/>
-      • <strong>Bachelor's:</strong> Computer Engineering — <strong>UFPR</strong> (2020/2024)<br/>
-      • <strong>Technical:</strong> Chemical Technician — <strong>SENAI</strong> (2018/2019)`
-    }
-  ]
 };
 
-function getCapiReply(query) {
-  const lang = currentLang;
-  const kb = CAPI_KNOWLEDGE[lang] || CAPI_KNOWLEDGE['pt'];
-  const cleanQ = query.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-
-  for (const item of kb) {
-    for (const key of item.keys) {
-      const cleanKey = key.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-      if (cleanQ.includes(cleanKey)) {
-        return item.response;
-      }
-    }
-  }
-
-  if (lang === 'en') {
-    return `Great question! 🦫 Renan can provide deeper details about that directly. Feel free to drop him an email at <a href="mailto:renansko@gmail.com">renansko@gmail.com</a> or WhatsApp at <a href="tel:+5541999088675">+55 (41) 99908-8675</a>!`;
-  }
-  return `Ótima pergunta! 🦫 O Renan pode te dar detalhes mais profundos sobre isso. Você pode mandar um e-mail direto para <a href="mailto:renansko@gmail.com">renansko@gmail.com</a> ou falar no WhatsApp <a href="tel:+5541999088675">+55 (41) 99908-8675</a>!`;
-}
-
-function addMessage(text, sender) {
-  const msgEl = document.createElement('div');
-  msgEl.className = `chat-msg ${sender}`;
-  
-  const time = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-  const senderName = sender === 'bot' ? 'CapiBot' : (currentLang === 'pt' ? 'Você' : 'You');
-
-  msgEl.innerHTML = `
-    <div class="bubble">${text}</div>
-    <div class="meta"><span>${senderName}</span> • <span>${time}</span></div>
-  `;
-  capiMessages.insertBefore(msgEl, capiTyping);
-  capiMessages.scrollTop = capiMessages.scrollHeight;
-}
-
-function handleUserMessage(query) {
-  if (!query || !query.trim()) return;
-  addMessage(query, 'user');
-  capiInput.value = '';
-
-  // Show typing simulation
-  capiTyping.classList.add('show');
-  capiMessages.scrollTop = capiMessages.scrollHeight;
-
+function setBubbleText(htmlContent) {
+  capyText.style.opacity = '0';
   setTimeout(() => {
-    capiTyping.classList.remove('show');
-    const reply = getCapiReply(query);
-    addMessage(reply, 'bot');
-  }, 700 + Math.random() * 500);
+    capyText.innerHTML = htmlContent;
+    capyText.style.opacity = '1';
+    capyText.scrollTop = 0;
+  }, 120);
 }
 
-capiForm.addEventListener('submit', (e) => {
-  e.preventDefault();
-  handleUserMessage(capiInput.value);
+// Toggle bubble on click
+capyAvatarBtn.addEventListener('click', () => {
+  capyBubble.classList.toggle('open');
+  if (capyBubble.classList.contains('open')) {
+    setBubbleText(DIALOG_KNOWLEDGE[currentLang].welcome);
+  }
 });
 
-// Quick chips click handler
-document.querySelectorAll('.capibot-chip').forEach(chip => {
-  chip.addEventListener('click', () => {
-    const qKey = chip.dataset.q;
-    let queryText = chip.textContent;
-    if (qKey === 'stack') queryText = currentLang === 'pt' ? 'Qual a stack do Renan?' : 'What is Renan\'s tech stack?';
-    if (qKey === 'ia') queryText = currentLang === 'pt' ? 'Como funciona a IA sem alucinação?' : 'How does the zero-hallucination AI work?';
-    if (qKey === '50m') queryText = currentLang === 'pt' ? 'Conte sobre a otimização de 50M de mensagens' : 'Tell me about the 50M message optimization';
-    if (qKey === 'projetos') queryText = currentLang === 'pt' ? 'Quais os principais projetos?' : 'What are the main projects?';
-    if (qKey === 'ufpr') queryText = currentLang === 'pt' ? 'Qual a formação do Renan na UFPR?' : 'What is Renan\'s education at UFPR?';
-    if (qKey === 'contato') queryText = currentLang === 'pt' ? 'Como entrar em contato?' : 'How can I contact Renan?';
-    handleUserMessage(queryText);
+capyClose.addEventListener('click', (e) => {
+  e.stopPropagation();
+  capyBubble.classList.remove('open');
+});
+
+capyReset.addEventListener('click', () => {
+  setBubbleText(DIALOG_KNOWLEDGE[currentLang].welcome);
+});
+
+// Click topic pills
+document.querySelectorAll('.capy-topic-pill').forEach(pill => {
+  pill.addEventListener('click', () => {
+    const topic = pill.dataset.topic;
+    const content = DIALOG_KNOWLEDGE[currentLang][topic] || DIALOG_KNOWLEDGE[currentLang].welcome;
+    setBubbleText(content);
   });
+});
+
+// Submit free input query
+capyForm.addEventListener('submit', (e) => {
+  e.preventDefault();
+  const query = capyInput.value.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  if (!query) return;
+  capyInput.value = '';
+
+  const lang = currentLang;
+  if (query.includes('stack') || query.includes('tecnolog') || query.includes('linguag') || query.includes('laravel') || query.includes('php') || query.includes('vue') || query.includes('react') || query.includes('node') || query.includes('python') || query.includes('rust') || query.includes('aws') || query.includes('docker')) {
+    setBubbleText(DIALOG_KNOWLEDGE[lang].stack);
+  } else if (query.includes('ia') || query.includes('ai') || query.includes('alucin') || query.includes('rag') || query.includes('agent') || query.includes('llm')) {
+    setBubbleText(DIALOG_KNOWLEDGE[lang].ia);
+  } else if (query.includes('50m') || query.includes('50 milho') || query.includes('mensag') || query.includes('otimiz') || query.includes('perform') || query.includes('query')) {
+    setBubbleText(DIALOG_KNOWLEDGE[lang]['50m']);
+  } else if (query.includes('projet') || query.includes('case') || query.includes('boltech') || query.includes('teros') || query.includes('cnpjbiz') || query.includes('tecnofit') || query.includes('multi')) {
+    setBubbleText(DIALOG_KNOWLEDGE[lang].projetos);
+  } else if (query.includes('ufpr') || query.includes('formac') || query.includes('estud') || query.includes('faculdad') || query.includes('pos') || query.includes('engenhar') || query.includes('senai')) {
+    setBubbleText(DIALOG_KNOWLEDGE[lang].ufpr);
+  } else if (query.includes('contat') || query.includes('email') || query.includes('telef') || query.includes('whats') || query.includes('linkedin') || query.includes('curricul') || query.includes('cv')) {
+    setBubbleText(DIALOG_KNOWLEDGE[lang].contato);
+  } else {
+    setBubbleText(DIALOG_KNOWLEDGE[lang].fallback);
+  }
 });
 </script>
 </body>
