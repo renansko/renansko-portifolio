@@ -2132,6 +2132,81 @@ capyForm.addEventListener('submit', (e) => {
     setBubbleText(DIALOG_KNOWLEDGE[lang].fallback);
   }
 });
+
+// =======================================================
+// IDLE WALK PATROL (20s INACTIVITY)
+// =======================================================
+const capyContainer = document.querySelector('.capy-container');
+const capyAvatarImg = document.querySelector('.capy-avatar-img');
+
+let idleTimer = null;
+let isWalking = false;
+let walkTimeout1 = null;
+let walkTimeout2 = null;
+let walkTimeout3 = null;
+
+const IDLE_LIMIT = 20000; // 20 segundos
+
+function resetIdleTimer() {
+  clearTimeout(idleTimer);
+  if (isWalking) {
+    stopWalk();
+  }
+  idleTimer = setTimeout(startIdleWalk, IDLE_LIMIT);
+}
+
+function startIdleWalk() {
+  // Não inicia caminhada se o balão de fala estiver aberto ou se já estiver caminhando
+  if (capyBubble.classList.contains('open') || isWalking) return;
+
+  isWalking = true;
+  capyAvatarImg.src = 'uploads/capivara_walk.gif';
+
+  const screenWidth = window.innerWidth;
+  const targetX = Math.max(100, Math.min(screenWidth - 130, 750));
+
+  // 1. Move suavemente para a direita (facing right: scaleX(-1) para virar para a direita)
+  capyContainer.style.transition = 'left 6.5s linear';
+  capyContainer.style.left = `${targetX}px`;
+  capyAvatarBtn.style.transform = 'scaleX(-1)';
+
+  // 2. Ao chegar na direita, espera meio segundo, vira para a esquerda e volta
+  walkTimeout1 = setTimeout(() => {
+    if (!isWalking) return;
+    capyAvatarBtn.style.transform = 'scaleX(1)'; // Facing left
+
+    walkTimeout2 = setTimeout(() => {
+      if (!isWalking) return;
+      capyContainer.style.transition = 'left 6.5s linear';
+      capyContainer.style.left = '24px';
+
+      // 3. Ao chegar de volta em casa, retorna à pose inicial
+      walkTimeout3 = setTimeout(() => {
+        stopWalk();
+        resetIdleTimer();
+      }, 6500);
+    }, 400);
+  }, 6500);
+}
+
+function stopWalk() {
+  isWalking = false;
+  clearTimeout(walkTimeout1);
+  clearTimeout(walkTimeout2);
+  clearTimeout(walkTimeout3);
+
+  capyContainer.style.transition = 'left 0.8s cubic-bezier(.2,.8,.2,1)';
+  capyContainer.style.left = '24px';
+  capyAvatarBtn.style.transform = 'scaleX(1)';
+  capyAvatarImg.src = 'uploads/capivara.gif';
+}
+
+// Escuta atividades do usuário para resetar o temporizador de 20s
+['mousemove', 'mousedown', 'keydown', 'touchstart', 'scroll'].forEach(evt => {
+  window.addEventListener(evt, resetIdleTimer, { passive: true });
+});
+
+resetIdleTimer();
 </script>
 </body>
 </html>
