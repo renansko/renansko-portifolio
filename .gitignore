@@ -1,0 +1,6 @@
+.vercel/
+.env*
+!.env.example
+coverage.out
+bin/
+node_modules/
