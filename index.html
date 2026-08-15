@@ -1756,7 +1756,7 @@ body[data-density="spacious"] { --density: 1.25; }
 
   <!-- Transparent Mascot Button (Sem Fundo & Sem Aura) -->
   <button class="capy-avatar-btn" id="capyAvatarBtn" aria-label="Assistente Virtual" title="Conversar com o assistente">
-    <img src="uploads/capivara_idle.png" alt="Capivara Assistente" class="capy-avatar-img" />
+    <img src="uploads/output-onlinegiftools.gif" alt="Capivara Assistente" class="capy-avatar-img" />
   </button>
 </div>
 
@@ -2202,37 +2202,17 @@ async function askCapivaraPreset(topic) {
   await askCapivara(question);
 }
 
-// Pre-carrega o GIF da animacao para transicao instantanea no hover
-const capyPreloadGif = new Image();
-capyPreloadGif.src = 'uploads/capivara.gif';
-
 // Toggle bubble on click
 capyAvatarBtn.addEventListener('click', () => {
   capyBubble.classList.toggle('open');
   if (capyBubble.classList.contains('open')) {
-    capyAvatarImg.src = 'uploads/capivara.gif';
     setBubbleText(DIALOG_KNOWLEDGE[currentLang].welcome);
-  } else {
-    capyAvatarImg.src = 'uploads/capivara_idle.png';
-  }
-});
-
-// Hover: ativa a animacao de acenar/cumprimentar ao passar o mouse
-capyAvatarBtn.addEventListener('mouseenter', () => {
-  capyAvatarImg.src = 'uploads/capivara.gif';
-});
-
-// Mouse leave: volta para a pose estatica se o balao nao estiver aberto
-capyAvatarBtn.addEventListener('mouseleave', () => {
-  if (!capyBubble.classList.contains('open')) {
-    capyAvatarImg.src = 'uploads/capivara_idle.png';
   }
 });
 
 capyClose.addEventListener('click', (e) => {
   e.stopPropagation();
   capyBubble.classList.remove('open');
-  capyAvatarImg.src = 'uploads/capivara_idle.png';
 });
 
 capyReset.addEventListener('click', () => {
