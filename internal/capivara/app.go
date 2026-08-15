@@ -17,12 +17,12 @@ import (
 )
 
 const (
-	maxMessageLength   = 500
-	maxHistoryItems    = 6
-	retrievalLimit     = 5
+	maxMessageLength    = 500
+	maxHistoryItems     = 6
+	retrievalLimit      = 5
 	embeddingDimensions = 1536
-	rateLimitRequests  = 20
-	rateLimitWindow    = time.Minute
+	rateLimitRequests   = 20
+	rateLimitWindow     = time.Minute
 )
 
 type HistoryItem struct {
