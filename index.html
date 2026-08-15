@@ -882,11 +882,12 @@ footer {
 .capy-container {
   position: fixed;
   bottom: 24px;
-  left: 24px;
+  right: 24px;
+  left: auto;
   z-index: 210;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: flex-end;
 }
 
 /* Transparent Mascot Avatar */
@@ -921,7 +922,8 @@ footer {
 .capy-speech-bubble {
   position: absolute;
   bottom: 122px;
-  left: 0;
+  right: 0;
+  left: auto;
   width: min(360px, calc(100vw - 48px));
   background: rgba(18, 18, 18, 0.95);
   backdrop-filter: blur(20px);
@@ -935,7 +937,7 @@ footer {
   display: none;
   flex-direction: column;
   gap: 12px;
-  transform-origin: bottom left;
+  transform-origin: bottom right;
   z-index: 220;
 }
 .capy-speech-bubble.open {
@@ -952,7 +954,8 @@ footer {
   content: '';
   position: absolute;
   bottom: -8px;
-  left: 30px;
+  right: 36px;
+  left: auto;
   width: 14px;
   height: 14px;
   background: rgba(18, 18, 18, 0.95);
@@ -1095,24 +1098,39 @@ footer {
 
 @media (max-width: 600px) {
   .capy-container {
-    left: 16px;
+    right: 16px;
+    left: auto;
     bottom: 16px;
   }
   .capy-avatar-btn {
-    width: 66px;
-    height: 66px;
+    width: 76px;
+    height: 95px;
   }
   .capy-speech-bubble {
     width: calc(100vw - 32px);
-    bottom: 80px;
-    left: 0;
+    bottom: 100px;
+    right: 0;
+    left: auto;
+  }
+  .tweaks-fab {
+    left: 16px;
+    right: auto;
+    bottom: 16px;
+  }
+  .tweaks-panel {
+    left: 16px;
+    right: auto;
+    bottom: 70px;
+    min-width: calc(100vw - 32px);
   }
 }
 
 /* Tweaks panel */
 .tweaks-panel {
   position: fixed;
-  bottom: 76px; right: 24px;
+  bottom: 76px;
+  left: 24px;
+  right: auto;
   background: var(--bg-elev);
   border: 1px solid var(--line-bright);
   padding: 20px;
@@ -1196,7 +1214,9 @@ body[data-density="spacious"] { --density: 1.25; }
 /* Tweaks FAB */
 .tweaks-fab {
   position: fixed;
-  bottom: 20px; right: 24px;
+  bottom: 20px;
+  left: 24px;
+  right: auto;
   z-index: 199;
   background: var(--bg-elev);
   color: var(--fg);
@@ -2262,29 +2282,29 @@ function startIdleWalk() {
 
   isWalking = true;
   capyAvatarImg.src = 'uploads/capivara_walk.gif?t=' + Date.now();
-  capyAvatarBtn.style.transform = 'none'; // Não inverte a imagem
+  capyAvatarBtn.style.transform = 'none';
 
   const screenWidth = window.innerWidth;
   const targetX = Math.max(100, Math.min(screenWidth - 140, 650));
 
-  // 1. Move para a direita durante 5.5s (enquanto o GIF caminha para a direita)
-  capyContainer.style.transition = 'left 5.5s linear';
-  capyContainer.style.left = `${targetX}px`;
+  // 1. Move para a ESQUERDA durante 3.88s (enquanto o GIF caminha para a esquerda)
+  capyContainer.style.transition = 'right 3.88s linear';
+  capyContainer.style.right = `${targetX}px`;
 
-  // 2. Ao atingir 5.5s, o GIF naturalmente vira e começa a caminhar de volta para a esquerda
+  // 2. Ao atingir 3.88s, o GIF naturalmente vira e começa a caminhar de volta para a DIREITA
   walkTimeout1 = setTimeout(() => {
     if (!isWalking) return;
 
-    // Move de volta para a esquerda durante 3.88s (enquanto o GIF caminha para a esquerda)
-    capyContainer.style.transition = 'left 3.88s linear';
-    capyContainer.style.left = '24px';
+    // Move de volta para a direita durante 5.5s (enquanto o GIF caminha para a direita)
+    capyContainer.style.transition = 'right 5.5s linear';
+    capyContainer.style.right = '24px';
 
-    // 3. Ao chegar em casa (após 3.88s), para naturalmente sem corte
+    // 3. Ao chegar em casa (após 5.5s), para naturalmente sem corte
     walkTimeout2 = setTimeout(() => {
       stopWalk();
       resetIdleTimer();
-    }, 3880);
-  }, 5500);
+    }, 5500);
+  }, 3880);
 }
 
 function stopWalk() {
@@ -2293,8 +2313,8 @@ function stopWalk() {
   clearTimeout(walkTimeout2);
   clearTimeout(walkTimeout3);
 
-  capyContainer.style.transition = 'left 0.8s cubic-bezier(.2,.8,.2,1)';
-  capyContainer.style.left = '24px';
+  capyContainer.style.transition = 'right 0.8s cubic-bezier(.2,.8,.2,1)';
+  capyContainer.style.right = '24px';
   capyAvatarBtn.style.transform = 'none';
   capyAvatarImg.src = capyBubble.classList.contains('open') ? 'uploads/capivara.gif' : 'uploads/capivara_idle.png';
 }
