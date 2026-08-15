@@ -1725,7 +1725,7 @@ body[data-density="spacious"] { --density: 1.25; }
   <!-- Interactive Speech Bubble anchored to Capybara Head -->
   <div class="capy-speech-bubble" id="capyBubble">
     <div class="capy-bubble-top">
-      <span class="capy-bubble-status"><span class="dot"></span> RAG · Neon + pgvector</span>
+      <span class="capy-bubble-status"><span class="dot"></span> CapiBot · Assistente Virtual</span>
       <div class="capy-bubble-actions">
         <button class="capy-bubble-btn" id="capyReset" title="Reiniciar">↺</button>
         <button class="capy-bubble-btn" id="capyClose" title="Fechar">×</button>
@@ -2107,99 +2107,10 @@ const DIALOG_KNOWLEDGE = {
 function setBubbleText(htmlContent) {
   capyText.style.opacity = '0';
   setTimeout(() => {
-    capyText.classList.remove('loading');
     capyText.innerHTML = htmlContent;
     capyText.style.opacity = '1';
     capyText.scrollTop = 0;
   }, 120);
-}
-
-function setBubblePlainText(content, { loading = false } = {}) {
-  capyText.style.opacity = '0';
-  setTimeout(() => {
-    capyText.classList.toggle('loading', loading);
-    capyText.textContent = content;
-    capyText.style.opacity = '1';
-    capyText.scrollTop = 0;
-  }, 120);
-}
-
-function setCapyPending(pending) {
-  capyRequestPending = pending;
-  capyInput.disabled = pending;
-  capySubmit.disabled = pending;
-  document.querySelectorAll('.capy-topic-pill').forEach(pill => {
-    pill.disabled = pending;
-  });
-}
-
-const TOPIC_QUESTIONS = {
-  pt: {
-    stack: 'Qual é a principal stack técnica do Renan?',
-    ia: 'Conte sobre a experiência do Renan com IA, agentes e sistemas anti-alucinação.',
-    '50m': 'Como foi o case de performance com mais de 50 milhões de mensagens?',
-    projetos: 'Quais são os principais projetos e cases do Renan?',
-    ufpr: 'Qual é a formação acadêmica do Renan?',
-    contato: 'Como posso entrar em contato com o Renan?'
-  },
-  en: {
-    stack: 'What is Renan’s main technical stack?',
-    ia: 'Tell me about Renan’s experience with AI agents and anti-hallucination systems.',
-    '50m': 'How did the performance case involving more than 50 million messages work?',
-    projetos: 'What are Renan’s main projects and case studies?',
-    ufpr: 'What is Renan’s academic background?',
-    contato: 'How can I contact Renan?'
-  }
-};
-
-async function askCapivara(message) {
-  if (!message || capyRequestPending) return;
-
-  setCapyPending(true);
-  setBubblePlainText(
-    currentLang === 'pt' ? 'Consultando o portfólio…' : 'Searching the portfolio…',
-    { loading: true }
-  );
-
-  try {
-    const response = await fetch('/api/chat', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        message,
-        language: currentLang,
-        history: capyHistory
-      }),
-      signal: AbortSignal.timeout(25000)
-    });
-    const payload = await response.json().catch(() => ({}));
-
-    if (!response.ok) {
-      throw new Error(payload.error || 'Não foi possível consultar o portfólio.');
-    }
-
-    setBubblePlainText(payload.answer);
-    capyHistory = [
-      ...capyHistory,
-      { role: 'user', content: message },
-      { role: 'assistant', content: payload.answer }
-    ].slice(-6);
-  } catch (error) {
-    const timeout = error?.name === 'TimeoutError';
-    setBubblePlainText(
-      timeout
-        ? (currentLang === 'pt' ? 'A consulta demorou demais. Tente novamente.' : 'The request took too long. Please try again.')
-        : (error.message || (currentLang === 'pt' ? 'A Capivara está indisponível agora.' : 'Capivara is unavailable right now.'))
-    );
-  } finally {
-    setCapyPending(false);
-    capyInput.focus();
-  }
-}
-
-async function askCapivaraPreset(topic) {
-  const question = TOPIC_QUESTIONS[currentLang][topic];
-  await askCapivara(question);
 }
 
 // Toggle bubble on click
@@ -2216,26 +2127,41 @@ capyClose.addEventListener('click', (e) => {
 });
 
 capyReset.addEventListener('click', () => {
-  capyHistory = [];
   setBubbleText(DIALOG_KNOWLEDGE[currentLang].welcome);
 });
 
 // Click topic pills
 document.querySelectorAll('.capy-topic-pill').forEach(pill => {
   pill.addEventListener('click', () => {
-    if (capyRequestPending) return;
     const topic = pill.dataset.topic;
-    askCapivaraPreset(topic);
+    const content = DIALOG_KNOWLEDGE[currentLang][topic] || DIALOG_KNOWLEDGE[currentLang].welcome;
+    setBubbleText(content);
   });
 });
 
 // Submit free input query
 capyForm.addEventListener('submit', (e) => {
   e.preventDefault();
-  const query = capyInput.value.trim();
-  if (!query || capyRequestPending) return;
+  const query = capyInput.value.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  if (!query) return;
   capyInput.value = '';
-  askCapivara(query);
+
+  const lang = currentLang;
+  if (query.includes('stack') || query.includes('tecnolog') || query.includes('linguag') || query.includes('laravel') || query.includes('php') || query.includes('vue') || query.includes('react') || query.includes('node') || query.includes('python') || query.includes('rust') || query.includes('aws') || query.includes('docker')) {
+    setBubbleText(DIALOG_KNOWLEDGE[lang].stack);
+  } else if (query.includes('ia') || query.includes('ai') || query.includes('alucin') || query.includes('rag') || query.includes('agent') || query.includes('llm')) {
+    setBubbleText(DIALOG_KNOWLEDGE[lang].ia);
+  } else if (query.includes('50m') || query.includes('50 milho') || query.includes('mensag') || query.includes('otimiz') || query.includes('perform') || query.includes('query')) {
+    setBubbleText(DIALOG_KNOWLEDGE[lang]['50m']);
+  } else if (query.includes('projet') || query.includes('case') || query.includes('boltech') || query.includes('teros') || query.includes('cnpjbiz') || query.includes('tecnofit') || query.includes('multi')) {
+    setBubbleText(DIALOG_KNOWLEDGE[lang].projetos);
+  } else if (query.includes('ufpr') || query.includes('formac') || query.includes('estud') || query.includes('faculdad') || query.includes('pos') || query.includes('engenhar') || query.includes('senai')) {
+    setBubbleText(DIALOG_KNOWLEDGE[lang].ufpr);
+  } else if (query.includes('contat') || query.includes('email') || query.includes('telef') || query.includes('whats') || query.includes('linkedin') || query.includes('curricul') || query.includes('cv')) {
+    setBubbleText(DIALOG_KNOWLEDGE[lang].contato);
+  } else {
+    setBubbleText(DIALOG_KNOWLEDGE[lang].fallback);
+  }
 });
 </script>
 </body>
