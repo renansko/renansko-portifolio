@@ -892,7 +892,7 @@ footer {
 /* Transparent Mascot Avatar */
 .capy-avatar-btn {
   width: 96px;
-  height: 114px;
+  height: 120px;
   border: none;
   background: transparent;
   cursor: pointer;
@@ -901,7 +901,7 @@ footer {
   padding: 0;
   outline: none;
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: center;
 }
 .capy-avatar-btn:hover {
@@ -911,6 +911,7 @@ footer {
   width: 100%;
   height: 100%;
   object-fit: contain;
+  object-position: bottom center;
   display: block;
   filter: drop-shadow(0 6px 12px rgba(0,0,0,0.4));
   pointer-events: none;
@@ -1728,7 +1729,7 @@ body[data-density="spacious"] { --density: 1.25; }
 
   <!-- Transparent Mascot Button (Sem Fundo & Sem Aura) -->
   <button class="capy-avatar-btn" id="capyAvatarBtn" title="Conversar com o assistente">
-    <img src="uploads/capivara.gif" alt="Capivara Assistente" class="capy-avatar-img" />
+    <img src="uploads/capivara_idle.png" alt="Capivara Assistente" class="capy-avatar-img" />
   </button>
 </div>
 
@@ -2086,13 +2087,33 @@ function setBubbleText(htmlContent) {
 capyAvatarBtn.addEventListener('click', () => {
   capyBubble.classList.toggle('open');
   if (capyBubble.classList.contains('open')) {
+    capyAvatarImg.src = 'uploads/capivara.gif';
     setBubbleText(DIALOG_KNOWLEDGE[currentLang].welcome);
+  } else {
+    capyAvatarImg.src = 'uploads/capivara_idle.png';
+  }
+});
+
+// Hover: ativa a animação de acenar/falar ao passar o mouse
+capyAvatarBtn.addEventListener('mouseenter', () => {
+  if (!isWalking) {
+    capyAvatarImg.src = 'uploads/capivara.gif';
+  }
+});
+
+// Mouse leave: volta para a imagem estática se o balão não estiver aberto
+capyAvatarBtn.addEventListener('mouseleave', () => {
+  if (!isWalking && !capyBubble.classList.contains('open')) {
+    capyAvatarImg.src = 'uploads/capivara_idle.png';
   }
 });
 
 capyClose.addEventListener('click', (e) => {
   e.stopPropagation();
   capyBubble.classList.remove('open');
+  if (!isWalking) {
+    capyAvatarImg.src = 'uploads/capivara_idle.png';
+  }
 });
 
 capyReset.addEventListener('click', () => {
@@ -2165,7 +2186,7 @@ function startIdleWalk() {
   const screenWidth = window.innerWidth;
   const targetX = Math.max(100, Math.min(screenWidth - 130, 750));
 
-  // 1. Move suavemente para a direita (facing right: scaleX(-1) para virar para a direita)
+  // 1. Move suavemente para a direita (facing right: scaleX(-1))
   capyContainer.style.transition = 'left 6.5s linear';
   capyContainer.style.left = `${targetX}px`;
   capyAvatarBtn.style.transform = 'scaleX(-1)';
@@ -2180,7 +2201,7 @@ function startIdleWalk() {
       capyContainer.style.transition = 'left 6.5s linear';
       capyContainer.style.left = '24px';
 
-      // 3. Ao chegar de volta em casa, retorna à pose inicial
+      // 3. Ao chegar de volta em casa, retorna à pose estática inicial
       walkTimeout3 = setTimeout(() => {
         stopWalk();
         resetIdleTimer();
@@ -2198,7 +2219,7 @@ function stopWalk() {
   capyContainer.style.transition = 'left 0.8s cubic-bezier(.2,.8,.2,1)';
   capyContainer.style.left = '24px';
   capyAvatarBtn.style.transform = 'scaleX(1)';
-  capyAvatarImg.src = 'uploads/capivara.gif';
+  capyAvatarImg.src = capyBubble.classList.contains('open') ? 'uploads/capivara.gif' : 'uploads/capivara_idle.png';
 }
 
 // Escuta atividades do usuário para resetar o temporizador de 20s
