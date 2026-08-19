@@ -892,8 +892,8 @@ footer {
 
 /* Transparent Mascot Avatar */
 .capy-avatar-btn {
-  width: 130px;
-  height: 95px;
+  width: 104px;
+  height: 124px;
   border: none;
   background: transparent;
   cursor: pointer;
@@ -902,7 +902,7 @@ footer {
   padding: 0;
   outline: none;
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: center;
 }
 .capy-avatar-btn:hover {
@@ -912,6 +912,7 @@ footer {
   width: 100%;
   height: 100%;
   object-fit: contain;
+  object-position: bottom center;
   display: block;
   filter: drop-shadow(0 6px 14px rgba(0,0,0,0.5));
   pointer-events: none;
@@ -920,7 +921,7 @@ footer {
 /* Interactive Speech Bubble anchored to Capybara Head */
 .capy-speech-bubble {
   position: absolute;
-  bottom: 105px;
+  bottom: 130px;
   right: 0;
   left: auto;
   width: min(360px, calc(100vw - 48px));
@@ -953,7 +954,7 @@ footer {
   content: '';
   position: absolute;
   bottom: -8px;
-  right: 48px;
+  right: 42px;
   left: auto;
   width: 14px;
   height: 14px;
@@ -1102,12 +1103,12 @@ footer {
     bottom: 16px;
   }
   .capy-avatar-btn {
-    width: 105px;
-    height: 75px;
+    width: 80px;
+    height: 96px;
   }
   .capy-speech-bubble {
     width: calc(100vw - 32px);
-    bottom: 85px;
+    bottom: 104px;
     right: 0;
     left: auto;
   }
@@ -1756,7 +1757,7 @@ body[data-density="spacious"] { --density: 1.25; }
 
   <!-- Transparent Mascot Button (Sem Fundo & Sem Aura) -->
   <button class="capy-avatar-btn" id="capyAvatarBtn" aria-label="Assistente Virtual" title="Conversar com o assistente">
-    <img src="uploads/output-onlinegiftools.gif" alt="Capivara Assistente" class="capy-avatar-img" />
+    <img src="uploads/capivara_idle.png" alt="Capivara Assistente" class="capy-avatar-img" />
   </button>
 </div>
 
@@ -2113,17 +2114,37 @@ function setBubbleText(htmlContent) {
   }, 120);
 }
 
+// Pre-carrega o GIF da animacao para troca instantanea no hover
+const capyPreloadGif = new Image();
+capyPreloadGif.src = 'uploads/capivara.gif';
+
 // Toggle bubble on click
 capyAvatarBtn.addEventListener('click', () => {
   capyBubble.classList.toggle('open');
   if (capyBubble.classList.contains('open')) {
+    capyAvatarImg.src = 'uploads/capivara.gif';
     setBubbleText(DIALOG_KNOWLEDGE[currentLang].welcome);
+  } else {
+    capyAvatarImg.src = 'uploads/capivara_idle.png';
+  }
+});
+
+// Hover: ativa a animacao de acenar/cumprimentar ao passar o mouse
+capyAvatarBtn.addEventListener('mouseenter', () => {
+  capyAvatarImg.src = 'uploads/capivara.gif';
+});
+
+// Mouse leave: volta para a pose estatica se o balao nao estiver aberto
+capyAvatarBtn.addEventListener('mouseleave', () => {
+  if (!capyBubble.classList.contains('open')) {
+    capyAvatarImg.src = 'uploads/capivara_idle.png';
   }
 });
 
 capyClose.addEventListener('click', (e) => {
   e.stopPropagation();
   capyBubble.classList.remove('open');
+  capyAvatarImg.src = 'uploads/capivara_idle.png';
 });
 
 capyReset.addEventListener('click', () => {
