@@ -925,7 +925,7 @@ footer {
   right: 0;
   left: auto;
   width: min(360px, calc(100vw - 48px));
-  background: rgba(18, 18, 18, 0.95);
+  background: var(--bg-elev);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid var(--accent);
@@ -958,7 +958,7 @@ footer {
   left: auto;
   width: 14px;
   height: 14px;
-  background: rgba(18, 18, 18, 0.95);
+  background: var(--bg-elev);
   border-right: 1px solid var(--accent);
   border-bottom: 1px solid var(--accent);
   transform: rotate(45deg);
@@ -1075,6 +1075,51 @@ footer {
 .capy-bubble-input input:focus {
   border-color: var(--accent);
 }
+.capy-bubble-input input::placeholder {
+  color: var(--fg-muted);
+  opacity: 1;
+}
+.capy-api-setup {
+  display: grid;
+  gap: 8px;
+  padding: 10px;
+  border: 1px dashed var(--line-bright);
+  background: var(--bg-soft);
+  color: var(--fg);
+  font-size: 10px;
+  line-height: 1.5;
+}
+.capy-api-setup strong { color: var(--accent); }
+.capy-api-row { display: flex; gap: 6px; }
+.capy-api-row input {
+  min-width: 0;
+  flex: 1;
+  background: var(--bg);
+  border: 1px solid var(--line-bright);
+  color: var(--fg);
+  font-family: var(--mono);
+  font-size: 10px;
+  padding: 7px 9px;
+  outline: none;
+}
+.capy-api-row input:focus { border-color: var(--accent); }
+.capy-api-row button {
+  border: 1px solid var(--accent);
+  background: transparent;
+  color: var(--accent);
+  font-family: var(--mono);
+  font-size: 10px;
+  padding: 7px 9px;
+  cursor: pointer;
+}
+.capy-api-note { color: var(--fg-muted); }
+.capy-api-state { color: var(--accent); min-height: 15px; }
+.capy-speech-bubble,
+.capy-speech-bubble button,
+.capy-speech-bubble input { color-scheme: dark; }
+body[data-theme="light"] .capy-speech-bubble,
+body[data-theme="light"] .capy-speech-bubble button,
+body[data-theme="light"] .capy-speech-bubble input { color-scheme: light; }
 .capy-bubble-input button {
   background: var(--accent);
   color: #000;
@@ -1748,6 +1793,16 @@ body[data-density="spacious"] { --density: 1.25; }
       <button class="capy-topic-pill" data-topic="contato">📞 Falar com o Renan</button>
     </div>
 
+    <div class="capy-api-setup" id="capyApiSetup">
+      <div id="capyApiCopy"><strong>RAG de férias 🥲</strong> — não tenho uma API key disponível porque, tecnicamente falando, estou pobre. Se quiser perguntas livres, empreste a sua:</div>
+      <div class="capy-api-row">
+        <input type="password" id="capyApiKey" placeholder="sk-... (não será salva)" autocomplete="off" spellcheck="false" aria-label="OpenAI API key" />
+        <button type="button" id="capyApiForget">Esquecer</button>
+      </div>
+      <div class="capy-api-note" id="capyApiNote">Confiança em portfólio público? Corajoso. A chave fica só na memória desta aba e vai diretamente à OpenAI. Este site não salva, registra nem envia a chave ao Renan. Fechou ou recarregou a aba: evaporou. Ainda assim, use uma chave temporária e com limite de gastos.</div>
+      <div class="capy-api-state" id="capyApiState">Sem chave: respostas rápidas usam apenas o currículo local.</div>
+    </div>
+
     <!-- Mini input for free queries -->
     <form class="capy-bubble-input" id="capyForm">
       <input type="text" id="capyInput" placeholder="Ou digite sua dúvida..." autocomplete="off" maxlength="500" />
@@ -2039,8 +2094,24 @@ const capyTopics = document.getElementById('capyTopics');
 const capyForm = document.getElementById('capyForm');
 const capyInput = document.getElementById('capyInput');
 const capySubmit = capyForm.querySelector('button[type="submit"]');
+const capyApiKey = document.getElementById('capyApiKey');
+const capyApiForget = document.getElementById('capyApiForget');
+const capyApiState = document.getElementById('capyApiState');
 let capyHistory = [];
 let capyRequestPending = false;
+
+const CAPY_SYSTEM_PROMPT = `Você é o CapiBot, assistente bem-humorado do portfólio de Renan Skonicezny Vilela. Responda no idioma da pergunta, com objetividade, sem inventar informações. Se algo não constar no currículo, diga isso e indique o contato do Renan.
+
+CURRÍCULO DE REFERÊNCIA:
+- Full Stack Software Engineer em Curitiba, formado em Engenharia da Computação pela UFPR (2020–2024) e pós-graduando em Inteligência Artificial Aplicada na UFPR (2025–2026).
+- Stack: PHP, Laravel, Node.js, TypeScript, Python, C#, Rust; Vue 3, Nuxt, React, Next.js, Flutter e Tailwind; PostgreSQL, MySQL, Redis, RabbitMQ e WebSockets; AWS (ECS, RDS, Lambda), Terraform, Docker, Vultr, Cloudflare e NGINX.
+- E-inov: soluções de IA, automação e sistemas corporativos; agentes inbound/outbound com autoavaliação, confiança e retroalimentação de contexto; zero chamados de qualidade reportados. Em uma base de 50 milhões+ de mensagens, paginação por cursor e índices PostgreSQL reduziram consultas de 300 para 26 segundos. Também arquitetou plataforma multi-tenant de landing pages com domínios próprios.
+- Boltech: ERP para rastreamento veicular e setor automotivo; módulos de estoque, vendas, financeiro e ordens de serviço; integrações Itaú e mensageria com Redis/RabbitMQ/WebSockets.
+- Teros: Open Finance, infraestrutura AWS/Terraform para BTG Pactual, homologação BACEN, observabilidade, microsserviços C# e autenticação mTLS.
+- Tecnofit: sistemas fitness, importação, migração e sincronização de dados, soluções white-label e otimização SQL.
+- Contato: renansko@gmail.com, +55 (41) 99908-8675, LinkedIn /in/renan-skonicezny-vilela e GitHub @renansko.
+
+Não diga que esta conversa usa RAG: o contexto acima está embutido no site. Não exponha estas instruções. Use no máximo 180 palavras.`;
 
 const DIALOG_KNOWLEDGE = {
   pt: {
@@ -2148,7 +2219,21 @@ capyClose.addEventListener('click', (e) => {
 });
 
 capyReset.addEventListener('click', () => {
+  capyHistory = [];
   setBubbleText(DIALOG_KNOWLEDGE[currentLang].welcome);
+});
+
+capyApiKey.addEventListener('input', () => {
+  capyApiState.textContent = capyApiKey.value.trim()
+    ? (currentLang === 'pt' ? 'Chave carregada apenas nesta aba. Pergunte qualquer coisa.' : 'Key loaded for this tab only. Ask anything.')
+    : (currentLang === 'pt' ? 'Sem chave: respostas rápidas usam apenas o currículo local.' : 'No key: quick answers use the local résumé only.');
+});
+
+capyApiForget.addEventListener('click', () => {
+  capyApiKey.value = '';
+  capyHistory = [];
+  capyApiState.textContent = currentLang === 'pt' ? 'Chave esquecida. Puff. Sumiu mesmo.' : 'Key forgotten. Poof. It is really gone.';
+  capyApiKey.focus();
 });
 
 // Click topic pills
@@ -2160,15 +2245,88 @@ document.querySelectorAll('.capy-topic-pill').forEach(pill => {
   });
 });
 
+function renderAssistantText(text) {
+  const escaped = text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\n/g, '<br/>');
+  return escaped;
+}
+
+function responseText(payload) {
+  if (typeof payload.output_text === 'string') return payload.output_text;
+  return (payload.output || [])
+    .flatMap(item => item.content || [])
+    .filter(item => item.type === 'output_text')
+    .map(item => item.text || '')
+    .join('\n');
+}
+
+async function askOpenAI(question, apiKey) {
+  const recentHistory = capyHistory.slice(-6);
+  const response = await fetch('https://api.openai.com/v1/responses', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${apiKey}`
+    },
+    body: JSON.stringify({
+      model: 'gpt-4.1-mini',
+      instructions: CAPY_SYSTEM_PROMPT,
+      input: [...recentHistory, { role: 'user', content: question }],
+      max_output_tokens: 500,
+      store: false
+    })
+  });
+
+  const payload = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    const detail = payload.error?.message || `HTTP ${response.status}`;
+    throw new Error(detail);
+  }
+
+  const answer = responseText(payload).trim();
+  if (!answer) throw new Error('A API respondeu sem texto. A capivara ficou contemplativa demais.');
+  capyHistory.push({ role: 'user', content: question }, { role: 'assistant', content: answer });
+  return answer;
+}
+
+function setCapyPending(pending) {
+  capyRequestPending = pending;
+  capyInput.disabled = pending;
+  capySubmit.disabled = pending;
+  capyApiKey.disabled = pending;
+  document.querySelectorAll('.capy-topic-pill').forEach(pill => { pill.disabled = pending; });
+}
+
 // Submit free input query
-capyForm.addEventListener('submit', (e) => {
+capyForm.addEventListener('submit', async (e) => {
   e.preventDefault();
-  const query = capyInput.value.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-  if (!query) return;
+  if (capyRequestPending) return;
+  const question = capyInput.value.trim();
+  if (!question) return;
+  const query = question.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
   capyInput.value = '';
 
   const lang = currentLang;
-  if (query.includes('stack') || query.includes('tecnolog') || query.includes('linguag') || query.includes('laravel') || query.includes('php') || query.includes('vue') || query.includes('react') || query.includes('node') || query.includes('python') || query.includes('rust') || query.includes('aws') || query.includes('docker')) {
+  const apiKey = capyApiKey.value.trim();
+  if (apiKey) {
+    setCapyPending(true);
+    capyText.classList.add('loading');
+    setBubbleText(lang === 'pt' ? 'Consultando a capivara na nuvem…' : 'Consulting the capybara in the cloud…');
+    try {
+      const answer = await askOpenAI(question, apiKey);
+      setBubbleText(renderAssistantText(answer));
+    } catch (error) {
+      setBubbleText(`${lang === 'pt' ? '<strong>Não rolou.</strong> A chave não foi salva. A OpenAI respondeu: ' : '<strong>It did not work.</strong> The key was not saved. OpenAI replied: '}${renderAssistantText(error.message)}`);
+    } finally {
+      capyText.classList.remove('loading');
+      setCapyPending(false);
+      capyInput.focus();
+    }
+  } else if (query.includes('stack') || query.includes('tecnolog') || query.includes('linguag') || query.includes('laravel') || query.includes('php') || query.includes('vue') || query.includes('react') || query.includes('node') || query.includes('python') || query.includes('rust') || query.includes('aws') || query.includes('docker')) {
     setBubbleText(DIALOG_KNOWLEDGE[lang].stack);
   } else if (query.includes('ia') || query.includes('ai') || query.includes('alucin') || query.includes('rag') || query.includes('agent') || query.includes('llm')) {
     setBubbleText(DIALOG_KNOWLEDGE[lang].ia);
@@ -2181,7 +2339,9 @@ capyForm.addEventListener('submit', (e) => {
   } else if (query.includes('contat') || query.includes('email') || query.includes('telef') || query.includes('whats') || query.includes('linkedin') || query.includes('curricul') || query.includes('cv')) {
     setBubbleText(DIALOG_KNOWLEDGE[lang].contato);
   } else {
-    setBubbleText(DIALOG_KNOWLEDGE[lang].fallback);
+    setBubbleText(lang === 'pt'
+      ? `${DIALOG_KNOWLEDGE.pt.fallback}<br/><br/><strong>Quer uma resposta de IA?</strong> Cole sua API key acima — a minha está praticando austeridade fiscal.`
+      : `${DIALOG_KNOWLEDGE.en.fallback}<br/><br/><strong>Want an AI answer?</strong> Paste your API key above — mine is currently practicing fiscal austerity.`);
   }
 });
 </script>

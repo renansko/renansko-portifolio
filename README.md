@@ -1,63 +1,41 @@
 # Renan Skonicezny Vilela — Portfólio
 
-Site pessoal e portfólio profissional de Renan Skonicezny Vilela, com o CapiBot conectado a uma assistente RAG.
+Site pessoal e portfólio profissional de Renan Skonicezny Vilela.
 
-- **Stack**: HTML5, Vanilla CSS, Modern JavaScript.
-- **Mascote & Assistente**: CapiBot com backend serverless Go, OpenAI e Neon/pgvector.
-- **Deploy**: front-end estático e função Go na Vercel.
+- **Stack**: HTML5, CSS e JavaScript sem framework.
+- **Mascote & Assistente**: CapiBot com respostas locais baseadas no currículo e integração opcional com a OpenAI Responses API.
+- **Deploy**: front-end estático.
 
-## Arquitetura da Capivara
+## Como o CapiBot funciona
 
-O navegador chama `POST /api/chat`. A função serverless gera o embedding da pergunta, consulta os trechos mais próximos no PostgreSQL/pgvector e envia somente esse contexto para a OpenAI Responses API. As credenciais nunca chegam ao navegador.
+O RAG não está disponível nesta versão. Sem uma API key, o bot responde localmente a tópicos conhecidos do currículo. O visitante também pode informar temporariamente a própria chave para fazer perguntas livres: o contexto profissional fica embutido no prompt e a requisição parte diretamente do navegador para a OpenAI.
 
 ```text
-index.html → /api/chat → OpenAI Embeddings → Neon/pgvector
-                         contexto recuperado → OpenAI Responses → resposta
+sem chave: visitante → respostas locais do currículo
+com chave: visitante → OpenAI Responses API + contexto do currículo → resposta
 ```
 
-Principais arquivos:
+A chave digitada:
 
-- `api/chat.go`: entrada da função Go reconhecida pela Vercel.
-- `internal/capivara/`: validação, recuperação vetorial e cliente da OpenAI.
-- `db/migrations/001_portfolio_rag.sql`: extensão `vector`, tabela e índice HNSW.
-- `data/portfolio.json`: corpus editável do portfólio.
-- `cmd/setup-rag/main.go`: aplica a migração, gera embeddings e faz upsert do corpus.
+- permanece somente no campo em memória durante a aba atual;
+- não usa `localStorage`, `sessionStorage`, cookies ou backend do portfólio;
+- é enviada apenas para `https://api.openai.com/v1/responses`;
+- pode ser removida pelo botão **Esquecer** e desaparece ao recarregar ou fechar a aba.
 
-## Configuração
-
-Requisitos: Go 1.24 ou superior, uma chave da OpenAI API e um banco PostgreSQL com pgvector.
-
-1. Copie `.env.example` para `.env.local` e preencha as credenciais.
-2. Baixe as dependências e prepare o banco:
-
-```bash
-go mod download
-go run ./cmd/setup-rag
-```
-
-O comando é idempotente e pode ser executado novamente após alterações em `data/portfolio.json`.
+Como a chamada é feita no navegador, prefira uma chave temporária, restrita e com limite de gastos. Para produção com uma chave do proprietário do site, a arquitetura correta é adicionar um backend seguro e nunca publicar essa credencial no HTML.
 
 ## Execução local
 
-Para executar site e API juntos, autentique a CLI da Vercel e rode:
+Sirva a pasta com qualquer servidor HTTP estático. Exemplo:
 
 ```bash
-vercel dev
+python3 -m http.server 8000
 ```
 
-Para validar o código sem acessar serviços externos:
+Abra `http://localhost:8000`.
+
+## Testes
 
 ```bash
-go test ./...
-go test -race ./...
-go vet ./...
-go build ./...
+node --test tests/capibot.contract.test.js
 ```
-
-## Publicação
-
-Publique na Vercel e configure `DATABASE_URL` e `OPENAI_API_KEY`. As variáveis opcionais `OPENAI_EMBEDDING_MODEL` e `OPENAI_CHAT_MODEL` permitem trocar os modelos sem alterar o código.
-
-O front-end continua servido por `index.html`, mas o CapiBot RAG não funciona em hospedagem puramente estática porque depende da função segura em `/api/chat`.
-
-Nunca coloque a connection string do banco ou a chave da OpenAI no `index.html`, nem faça commit de `.env` ou `.env.local`.
