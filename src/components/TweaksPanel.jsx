@@ -1,16 +1,15 @@
 import { useState } from 'react';
 
 const SWATCHES = [
-  { id: 'cyan', color: '#22d3ee', title: 'Cyan' },
-  { id: 'green', color: '#4ade80', title: 'Green' },
-  { id: 'amber', color: '#fbbf24', title: 'Amber' },
-  { id: 'mono', color: '#f5f5f5', title: 'Monochrome' },
+  { id: 'grass', color: '#c4d45a', title: 'Campo' },
+  { id: 'sky', color: '#a8d8f8', title: 'Céu' },
+  { id: 'stripe', color: '#c7363c', title: 'Listra' },
+  { id: 'sun', color: '#f5c533', title: 'Sol' },
 ];
 
 const OPTION_ROWS = [
-  { key: 'theme', label: 'Tema', options: [['dark', 'Dark'], ['light', 'Light']] },
+  { key: 'theme', label: 'Tema', options: [['light', 'Dia'], ['dark', 'Noite']] },
   { key: 'density', label: 'Espaçamento', options: [['compact', 'Compact'], ['normal', 'Normal'], ['spacious', 'Spacious']] },
-  { key: 'hero', label: 'Hero Glyph', options: [['v1', './dev'], ['v2', '<ai/>'], ['v3', '~root']] },
 ];
 
 export default function TweaksPanel({ tweaks, onChange }) {

@@ -30,8 +30,8 @@ describe('App', () => {
 
   it('aplica tweaks de tema no body', () => {
     render(<App />);
-    fireEvent.click(screen.getByRole('button', { name: 'Light' }));
-    expect(document.body.dataset.theme).toBe('light');
-    expect(JSON.parse(window.localStorage.getItem('tweaks')).theme).toBe('light');
+    fireEvent.click(screen.getByRole('button', { name: 'Noite' }));
+    expect(document.body.dataset.theme).toBe('dark');
+    expect(JSON.parse(window.localStorage.getItem('tweaks-v2')).theme).toBe('dark');
   });
 });

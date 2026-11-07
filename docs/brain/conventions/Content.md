@@ -18,5 +18,5 @@ Código: `src/i18n.js`, `src/i18n-context.jsx`, `src/data.js`, `src/storage.js`.
 
 ## Preferências persistidas
 
-`src/storage.js` grava `lang` e `tweaks` (accent, theme, density, hero) no `localStorage`, com `try/catch`
+`src/storage.js` grava `lang` e `tweaks-v2` (accent, theme, density; ver [DesignSystem](DesignSystem.md)) no `localStorage`, com `try/catch`
 para janela privada. O tema é aplicado via `body[data-accent|data-theme|data-density]`, porque o CSS depende desses atributos.

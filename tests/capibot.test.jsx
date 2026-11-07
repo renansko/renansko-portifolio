@@ -28,16 +28,16 @@ function renderBot() {
 describe('tema', () => {
   it('balão do CapiBot usa cores do tema para texto legível', () => {
     const bubbleCss = css.match(/\.capy-speech-bubble \{([\s\S]*?)\n\}/)?.[1] || '';
-    expect(bubbleCss).toMatch(/background:\s*var\(--bg-elev\)/);
+    expect(bubbleCss).toMatch(/background:\s*var\(--surface\)/);
     expect(bubbleCss).toMatch(/color:\s*var\(--fg\)/);
     expect(bubbleCss).not.toMatch(/rgba\(18,\s*18,\s*18/);
   });
 
-  it('texto selecionado fica escuro sobre qualquer cor de destaque nos dois temas', () => {
+  it('seleção usa fundo fixo claro e texto escuro fixo, legível nos dois temas', () => {
     const selectionCss = css.match(/::selection\s*\{([^}]*)\}/)?.[1] || '';
-    expect(selectionCss).toMatch(/background:\s*var\(--accent\)/);
-    expect(selectionCss).toMatch(/color:\s*#(?:0{3}|0{6}|050505|0a0a0a)/i);
-    expect(selectionCss).not.toMatch(/color:\s*var\(--bg\)/);
+    expect(selectionCss).toMatch(/background:\s*var\(--sun-400\)/);
+    expect(selectionCss).toMatch(/color:\s*#2f4a22/i);
+    expect(selectionCss).not.toMatch(/color:\s*var\(--(bg|fg)\)/);
   });
 });
 

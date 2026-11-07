@@ -13,11 +13,13 @@ import TweaksPanel from './components/TweaksPanel.jsx';
 import { LangProvider } from './i18n-context.jsx';
 import { readStorage, writeStorage } from './storage.js';
 
-const TWEAK_DEFAULTS = { accent: 'cyan', theme: 'dark', density: 'normal', hero: 'v1' };
+// Chave versionada: preferências do visual antigo (cyan/dark) não se aplicam ao novo.
+const TWEAKS_KEY = 'tweaks-v2';
+const TWEAK_DEFAULTS = { accent: 'grass', theme: 'light', density: 'normal' };
 
 function loadTweaks() {
   try {
-    return { ...TWEAK_DEFAULTS, ...JSON.parse(readStorage('tweaks') || '{}') };
+    return { ...TWEAK_DEFAULTS, ...JSON.parse(readStorage(TWEAKS_KEY) || '{}') };
   } catch {
     return TWEAK_DEFAULTS;
   }
@@ -44,17 +46,15 @@ export default function App() {
     document.body.dataset.accent = tweaks.accent;
     document.body.dataset.theme = tweaks.theme;
     document.body.dataset.density = tweaks.density;
-    writeStorage('tweaks', JSON.stringify(tweaks));
+    writeStorage(TWEAKS_KEY, JSON.stringify(tweaks));
   }, [tweaks]);
 
   const setTweak = useCallback((key, value) => setTweaks((t) => ({ ...t, [key]: value })), []);
 
   return (
     <LangProvider>
-      <div className="grid-bg" />
-      <div className="noise" />
       <Nav />
-      <Hero heroGlyph={tweaks.hero} />
+      <Hero />
       <Marquee />
       <About />
       <Skills />

@@ -10,6 +10,7 @@ Portfólio pessoal em React 19 + Vite, publicado como site estático no GitHub P
 | --- | --- |
 | [services/CapiBot](services/CapiBot.md) | Assistente do portfólio: respostas locais e OpenAI com a chave do visitante (invariantes de segurança). |
 | [conventions/Deploy](conventions/Deploy.md) | Build Vite, caminho base `/renansko-portifolio/` e deploy via GitHub Actions. |
+| [conventions/DesignSystem](conventions/DesignSystem.md) | Tokens, paleta AA, grid de 8 px e composição do visual "Dia de Sol"; limite de uso da referência. |
 | [conventions/Content](conventions/Content.md) | Onde fica cada texto (i18n, dados, CapiBot) e como manter PT/EN em sincronia. |
 
 ## Mapa símbolo → página
@@ -18,6 +19,7 @@ Portfólio pessoal em React 19 + Vite, publicado como site estático no GitHub P
 | --- | --- |
 | `src/capibot/*` | [services/CapiBot](services/CapiBot.md) |
 | `vite.config.js`, `.github/workflows/deploy.yml` | [conventions/Deploy](conventions/Deploy.md) |
+| `src/styles.css`, `src/components/Hero.jsx`, `src/components/TweaksPanel.jsx` | [conventions/DesignSystem](conventions/DesignSystem.md) |
 | `src/i18n.js`, `src/data.js`, `src/storage.js` | [conventions/Content](conventions/Content.md) |
 
 Histórico de mudanças relevantes: [log.md](log.md).

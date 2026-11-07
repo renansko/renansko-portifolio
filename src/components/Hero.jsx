@@ -4,8 +4,6 @@ import { useInView } from '../hooks/useReveal.js';
 import { T, useLang } from '../i18n-context.jsx';
 import Reveal from './Reveal.jsx';
 
-const HERO_GLYPHS = { v1: './dev', v2: '<ai/>', v3: '~root' };
-
 function Counter({ target, start }) {
   const [value, setValue] = useState(target);
 
@@ -45,55 +43,44 @@ function StatStrip() {
   );
 }
 
-function AvatarSvg() {
+// Cena original: céu, nuvens, colinas e uma árvore. O ponto focal (árvore) fica
+// na interseção do terço direito superior.
+function HeroScene() {
+  const daisies = [
+    [60, 330], [104, 352], [150, 318], [210, 360], [262, 336], [318, 356], [372, 326], [420, 350], [454, 318],
+  ];
   return (
-    <svg viewBox="0 0 400 400" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" style={{ display: 'block' }}>
-      <defs>
-        <linearGradient id="gradA" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#333" />
-          <stop offset="1" stopColor="#0a0a0a" />
-        </linearGradient>
-        <pattern id="dots" x="0" y="0" width="8" height="8" patternUnits="userSpaceOnUse">
-          <circle cx="1" cy="1" r="0.8" fill="#888" />
-        </pattern>
-      </defs>
-      <g stroke="#2a2a2a" strokeWidth="0.5">
-        {[100, 200, 300].map((p) => (
-          <g key={p}>
-            <line x1="0" y1={p} x2="400" y2={p} />
-            <line x1={p} y1="0" x2={p} y2="400" />
-          </g>
-        ))}
+    <svg viewBox="0 0 480 400" role="img" aria-label="Ilustração de um campo verde com uma árvore sob o céu azul">
+      <circle cx="84" cy="76" r="28" fill="#f5c533" opacity="0.9" />
+      <g className="scene-cloud" fill="#ffffff">
+        <ellipse cx="120" cy="120" rx="56" ry="24" />
+        <ellipse cx="96" cy="108" rx="28" ry="24" />
+        <ellipse cx="140" cy="100" rx="32" ry="28" />
       </g>
-      <g transform="translate(200,200)">
-        <circle r="120" fill="none" stroke="currentColor" strokeWidth="1" opacity="0.3">
-          <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="60s" repeatCount="indefinite" />
-        </circle>
-        <circle r="90" fill="none" stroke="currentColor" strokeWidth="1" opacity="0.5" />
-        <polygon points="0,-90 78,45 -78,45" fill="none" stroke="currentColor" strokeWidth="1.5">
-          <animateTransform attributeName="transform" type="rotate" from="0" to="-360" dur="40s" repeatCount="indefinite" />
-        </polygon>
-        <polygon points="0,-60 52,30 -52,30" fill="url(#dots)" stroke="currentColor" strokeWidth="1" />
-        <circle r="30" fill="#0a0a0a" stroke="currentColor" strokeWidth="1.5" />
-        <text y="6" textAnchor="middle" fontFamily="JetBrains Mono, monospace" fontSize="18" fontWeight="600" fill="currentColor">
-          RSV
-        </text>
+      <g className="scene-cloud slow" fill="#ffffff" opacity="0.9">
+        <ellipse cx="392" cy="72" rx="48" ry="20" />
+        <ellipse cx="372" cy="60" rx="24" ry="20" />
+        <ellipse cx="408" cy="56" rx="28" ry="24" />
       </g>
-      <g stroke="currentColor" strokeWidth="1.5" fill="none">
-        <path d="M 20,20 L 20,40 L 40,40" />
-        <path d="M 380,20 L 380,40 L 360,40" />
-        <path d="M 20,380 L 20,360 L 40,360" />
-        <path d="M 380,380 L 380,360 L 360,360" />
+      <path d="M0 248 Q 80 192 168 232 T 336 224 T 480 216 L480 400 L0 400 Z" fill="var(--hill-back)" />
+      <g transform="translate(320 133)">
+        <rect x="-6" y="40" width="12" height="80" rx="4" fill="#6b4a2b" />
+        <ellipse cx="0" cy="40" rx="48" ry="28" fill="#2f4a22" />
+        <ellipse cx="0" cy="12" rx="40" ry="24" fill="#3d5f2e" />
+        <ellipse cx="0" cy="-12" rx="28" ry="20" fill="#4c7a36" />
       </g>
-      <line x1="0" y1="50" x2="400" y2="50" stroke="currentColor" strokeWidth="0.5" opacity="0.3">
-        <animate attributeName="y1" values="0;400;0" dur="8s" repeatCount="indefinite" />
-        <animate attributeName="y2" values="0;400;0" dur="8s" repeatCount="indefinite" />
-      </line>
+      <path d="M0 296 Q 120 240 240 288 T 480 280 L480 400 L0 400 Z" fill="var(--hill-front)" />
+      {daisies.map(([x, y]) => (
+        <g key={`${x}-${y}`} transform={`translate(${x} ${y})`}>
+          <circle r="6" fill="#ffffff" />
+          <circle r="2" fill="#f5c533" />
+        </g>
+      ))}
     </svg>
   );
 }
 
-export default function Hero({ heroGlyph }) {
+export default function Hero() {
   const { t } = useLang();
   return (
     <section className="hero" id="top">
@@ -108,9 +95,7 @@ export default function Hero({ heroGlyph }) {
           <Reveal as="h1" className="hero-title">
             <span className="line">Renan</span>
             <span className="line">Skonicezny</span>
-            <span className="line muted">
-              Vilela <span className="glyph">{HERO_GLYPHS[heroGlyph] ?? HERO_GLYPHS.v1}</span>
-            </span>
+            <span className="line muted">Vilela</span>
           </Reveal>
           <Reveal as="p" className="hero-sub" dangerouslySetInnerHTML={{ __html: t('hero_sub') }} />
           <Reveal className="hero-actions">
@@ -120,7 +105,7 @@ export default function Hero({ heroGlyph }) {
         </div>
 
         <Reveal className="avatar-wrap">
-          <AvatarSvg />
+          <HeroScene />
           <div className="avatar-label">
             <span>ID: RSV-2026</span>
             <span>v4.2.0</span>
