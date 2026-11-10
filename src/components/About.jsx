@@ -8,7 +8,8 @@ export default function About() {
     <section id="about">
       <SectionHeader num="01" titleKey="sec_about" tag="WHO" />
       <div className="about-grid">
-        <Reveal>
+        {/* Painel de superfície: texto solto sobre o céu não garante AA em todas as fases. */}
+        <Reveal className="panel">
           <T as="h2" className="about-title" k="about_title" />
           <div className="about-body">
             <T as="p" k="about_p1" />

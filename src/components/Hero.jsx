@@ -43,47 +43,11 @@ function StatStrip() {
   );
 }
 
-// Cena original: céu, nuvens, colinas e uma árvore. O ponto focal (árvore) fica
-// na interseção do terço direito superior.
-function HeroScene() {
-  const daisies = [
-    [60, 330], [104, 352], [150, 318], [210, 360], [262, 336], [318, 356], [372, 326], [420, 350], [454, 318],
-  ];
-  return (
-    <svg viewBox="0 0 480 400" role="img" aria-label="Ilustração de um campo verde com uma árvore sob o céu azul">
-      <circle cx="84" cy="76" r="28" fill="#f5c533" opacity="0.9" />
-      <g className="scene-cloud" fill="#ffffff">
-        <ellipse cx="120" cy="120" rx="56" ry="24" />
-        <ellipse cx="96" cy="108" rx="28" ry="24" />
-        <ellipse cx="140" cy="100" rx="32" ry="28" />
-      </g>
-      <g className="scene-cloud slow" fill="#ffffff" opacity="0.9">
-        <ellipse cx="392" cy="72" rx="48" ry="20" />
-        <ellipse cx="372" cy="60" rx="24" ry="20" />
-        <ellipse cx="408" cy="56" rx="28" ry="24" />
-      </g>
-      <path d="M0 248 Q 80 192 168 232 T 336 224 T 480 216 L480 400 L0 400 Z" fill="var(--hill-back)" />
-      <g transform="translate(320 133)">
-        <rect x="-6" y="40" width="12" height="80" rx="4" fill="#6b4a2b" />
-        <ellipse cx="0" cy="40" rx="48" ry="28" fill="#2f4a22" />
-        <ellipse cx="0" cy="12" rx="40" ry="24" fill="#3d5f2e" />
-        <ellipse cx="0" cy="-12" rx="28" ry="20" fill="#4c7a36" />
-      </g>
-      <path d="M0 296 Q 120 240 240 288 T 480 280 L480 400 L0 400 Z" fill="var(--hill-front)" />
-      {daisies.map(([x, y]) => (
-        <g key={`${x}-${y}`} transform={`translate(${x} ${y})`}>
-          <circle r="6" fill="#ffffff" />
-          <circle r="2" fill="#f5c533" />
-        </g>
-      ))}
-    </svg>
-  );
-}
-
 export default function Hero() {
   const { t } = useLang();
   return (
     <section className="hero" id="top">
+      {/* Coluna direita vazia de propósito: a árvore da cena de fundo ocupa o terço superior direito (Z). */}
       <div className="hero-grid">
         <div>
           <Reveal className="hero-meta">
@@ -103,14 +67,6 @@ export default function Hero() {
             <T as="a" className="btn" href={CV_URL} download k="hero_cta2" />
           </Reveal>
         </div>
-
-        <Reveal className="avatar-wrap">
-          <HeroScene />
-          <div className="avatar-label">
-            <span>ID: RSV-2026</span>
-            <span>v4.2.0</span>
-          </div>
-        </Reveal>
       </div>
       <StatStrip />
     </section>

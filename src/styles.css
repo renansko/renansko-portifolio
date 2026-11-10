@@ -77,8 +77,9 @@ body[data-accent="sky"] { --accent: var(--sky-300); --on-accent: var(--forest-80
 body[data-accent="stripe"] { --accent: var(--stripe-500); --on-accent: #ffffff; --accent-text: var(--stripe-600); }
 body[data-accent="sun"] { --accent: var(--sun-400); --on-accent: var(--forest-800); --accent-text: var(--sun-700); }
 
-/* Tema Noite */
-body[data-theme="dark"] {
+/* Modo escuro efetivo: tema Noite ou crepúsculo/noite do scroll (escrito pela PlainsScene).
+   data-theme é só a preferência salva; os tokens seguem data-mode. */
+body[data-mode="dark"] {
   --bg: #13202e;
   --bg-sky: #0e1a2b;
   --surface: #1b2b3e;
@@ -96,9 +97,9 @@ body[data-theme="dark"] {
   --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.35);
   --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.45);
 }
-body[data-theme="dark"][data-accent="sky"] { --accent-text: var(--sky-400); }
-body[data-theme="dark"][data-accent="stripe"] { --accent: #ff8a8e; --on-accent: #13202e; --accent-text: #ff8a8e; }
-body[data-theme="dark"][data-accent="sun"] { --accent-text: var(--sun-400); }
+body[data-mode="dark"][data-accent="sky"] { --accent-text: var(--sky-400); }
+body[data-mode="dark"][data-accent="stripe"] { --accent: #ff8a8e; --on-accent: #13202e; --accent-text: #ff8a8e; }
+body[data-mode="dark"][data-accent="sun"] { --accent-text: var(--sun-400); }
 
 body[data-density="compact"] { --density: 0.75; }
 body[data-density="spacious"] { --density: 1.25; }
@@ -111,9 +112,7 @@ body {
   font-size: 16px;
   line-height: 24px;
   color: var(--fg);
-  background:
-    linear-gradient(180deg, var(--bg-sky) 0, var(--bg) 960px) no-repeat,
-    var(--bg);
+  background: var(--bg); /* fallback sólido: o céu é a .scene, fixa atrás do conteúdo */
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   transition: background-color 0.3s, color 0.3s;
@@ -155,8 +154,17 @@ section {
   line-height: 24px;
   box-shadow: var(--clay), var(--shadow-sm);
 }
+.section-header .title,
+.section-header .tag {
+  padding: var(--s-1) var(--s-4);
+  border-radius: var(--r-pill);
+  background: var(--surface);
+  box-shadow: var(--clay), var(--shadow-sm);
+  transition: background-color 0.4s, color 0.4s;
+}
 .section-header .line { flex: 1; height: 2px; border-radius: 2px; background: var(--line); }
-.section-header > span:last-child {
+.section-header .tag {
+  padding: var(--s-2) var(--s-3);
   font-family: var(--font-body);
   font-size: 12px;
   line-height: 16px;
@@ -166,7 +174,7 @@ section {
 }
 @media (max-width: 600px) {
   .section-header { font-size: 24px; line-height: 32px; }
-  .section-header .line, .section-header > span:last-child { display: none; }
+  .section-header .line, .section-header .tag { display: none; }
 }
 
 /* ---------- Nav (pílula flutuante) ---------- */
@@ -260,6 +268,7 @@ nav.top .lang button.active { background: var(--accent); color: var(--on-accent)
 /* ---------- Hero (padrão Z: promessa → cena → CTA) ---------- */
 .hero {
   min-height: 100vh;
+  min-height: 100svh;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -323,38 +332,8 @@ h1.hero-title .muted { color: var(--accent-text); }
   text-wrap: pretty;
 }
 
-/* Cena ilustrada (ponto focal da árvore no terço direito) */
-.avatar-wrap {
-  position: relative;
-  aspect-ratio: 6 / 5;
-  border-radius: var(--r-xl);
-  overflow: hidden;
-  background: linear-gradient(180deg, var(--sky-300), var(--sky-100));
-  box-shadow: var(--shadow-lg);
-}
-body[data-theme="dark"] .avatar-wrap { background: linear-gradient(180deg, #0b1626, #1f3554); }
-.avatar-wrap svg { display: block; width: 100%; height: 100%; }
-.scene-cloud { animation: drift 24s ease-in-out infinite alternate; }
-.scene-cloud.slow { animation-duration: 36s; }
-@keyframes drift { from { transform: translateX(-16px); } to { transform: translateX(24px); } }
-.avatar-label {
-  position: absolute;
-  left: var(--s-3);
-  right: var(--s-3);
-  bottom: var(--s-3);
-  display: flex;
-  justify-content: space-between;
-  font-size: 12px;
-  line-height: 16px;
-  font-weight: 800;
-}
-.avatar-label span {
-  padding: var(--s-1) var(--s-2);
-  border-radius: var(--r-pill);
-  background: color-mix(in srgb, var(--surface) 88%, transparent);
-  color: var(--fg);
-}
-
+/* A coluna direita fica vazia: a árvore da .scene é o ponto focal (terço superior direito). */
+.hero-grid > div { grid-column: 1; }
 /* Faixa de prova (região comum: um card, quatro números) */
 .stat-strip {
   display: grid;
@@ -381,8 +360,11 @@ body[data-theme="dark"] .avatar-wrap { background: linear-gradient(180deg, #0b16
 @media (max-width: 850px) { .stat-strip { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 480px) { .stat-strip { grid-template-columns: 1fr; } }
 
-/* ---------- Marquee (faixa de campo) ---------- */
+/* ---------- Marquee (fita flutuante: largura do container, não é horizonte) ---------- */
 .marquee {
+  max-width: var(--container);
+  margin: 0 auto;
+  border-radius: var(--r-pill);
   overflow: hidden;
   white-space: nowrap;
   padding: var(--s-3) 0;
@@ -392,20 +374,27 @@ body[data-theme="dark"] .avatar-wrap { background: linear-gradient(180deg, #0b16
   font-size: 18px;
   line-height: 24px;
   font-weight: 600;
-  box-shadow: inset 0 4px 0 rgba(255, 255, 255, 0.25), inset 0 -4px 0 rgba(0, 0, 0, 0.08);
+  box-shadow: inset 0 4px 0 rgba(255, 255, 255, 0.25), inset 0 -4px 0 rgba(0, 0, 0, 0.08), var(--shadow-md);
+  transition: background-color 0.4s, color 0.4s;
 }
-body[data-theme="dark"] .marquee { background: var(--hill-front); color: #eef4ea; }
+@media (max-width: 1260px) { .marquee { margin: 0 var(--s-5); } }
+@media (max-width: 900px) { .marquee { margin: 0 var(--s-3); } }
+body[data-mode="dark"] .marquee { background: var(--hill-front); color: #eef4ea; }
 .marquee-track { display: inline-block; animation: scroll 45s linear infinite; }
 .marquee-track span { margin: 0 var(--s-3); }
 .marquee-track span::before { content: '✿'; margin-right: var(--s-4); color: #ffffff; }
 @keyframes scroll { to { transform: translateX(-50%); } }
 
 /* ---------- Cards genéricos ---------- */
-.info-card, .skill-cat, .exp-item, .project-card, .cta, .cta-link-card {
+.info-card, .skill-cat, .exp-item, .project-card, .cta, .cta-link-card, .panel {
   background: var(--surface);
   border-radius: var(--r-lg);
   box-shadow: var(--shadow-sm);
+  transition: background-color 0.4s, color 0.4s;
 }
+/* Painel de superfície para texto corrido sobre a cena (exceção à regra "cards só onde há grupo real"). */
+.panel { padding: var(--s-5); }
+@media (max-width: 700px) { .panel { padding: var(--s-4); } }
 
 /* ---------- Sobre ---------- */
 .about-grid { display: grid; grid-template-columns: 7fr 5fr; gap: var(--s-6); align-items: start; }
@@ -438,7 +427,7 @@ body[data-theme="dark"] .marquee { background: var(--hill-front); color: #eef4ea
 .skills-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--s-4); }
 @media (max-width: 1000px) { .skills-grid { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 640px) { .skills-grid { grid-template-columns: 1fr; } }
-.skill-cat { padding: var(--s-4); transition: transform 0.2s var(--ease), box-shadow 0.2s var(--ease); }
+.skill-cat { padding: var(--s-4); transition: transform 0.2s var(--ease), box-shadow 0.2s var(--ease), background-color 0.4s, color 0.4s; }
 .skill-cat:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
 .skill-cat h3 {
   display: flex;
@@ -551,7 +540,7 @@ body[data-theme="dark"] .marquee { background: var(--hill-front); color: #eef4ea
   flex-direction: column;
   padding: var(--s-5);
   overflow: hidden;
-  transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease), opacity 0.3s;
+  transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease), opacity 0.3s, background-color 0.4s, color 0.4s;
 }
 .project-card::before { content: ''; position: absolute; inset: 0 0 auto; height: 8px; background: var(--cat, var(--accent)); }
 .project-card[data-category="ai"] { --cat: var(--sky-300); }
@@ -578,23 +567,10 @@ body[data-theme="dark"] .marquee { background: var(--hill-front); color: #eef4ea
 /* ---------- Contato ---------- */
 .cta {
   position: relative;
-  padding: var(--s-7) var(--s-6) calc(var(--s-7) + 64px);
-  overflow: hidden;
-  background: linear-gradient(180deg, var(--sky-300), var(--sky-100));
+  padding: var(--s-7) var(--s-6);
   box-shadow: var(--shadow-lg);
 }
-body[data-theme="dark"] .cta { background: linear-gradient(180deg, #0b1626, #1f3554); }
-.cta::after {
-  /* colinas no rodapé do card */
-  content: '';
-  position: absolute;
-  inset: auto -10% -40px;
-  height: 120px;
-  border-radius: 50% 50% 0 0;
-  background: var(--hill-front);
-  box-shadow: -240px 24px 0 0 var(--hill-back);
-}
-@media (max-width: 700px) { .cta { padding: var(--s-6) var(--s-4) calc(var(--s-6) + 64px); } }
+@media (max-width: 700px) { .cta { padding: var(--s-6) var(--s-4); } }
 .cta-content { position: relative; z-index: 1; }
 .cta-kicker { margin-bottom: var(--s-3); font-size: 12px; line-height: 16px; font-weight: 800; letter-spacing: 0.12em; }
 .cta-title {
@@ -607,7 +583,7 @@ body[data-theme="dark"] .cta { background: linear-gradient(180deg, #0b1626, #1f3
   text-wrap: balance;
 }
 .cta-title em { font-style: normal; color: var(--stripe-600); }
-body[data-theme="dark"] .cta-title em { color: var(--sun-400); }
+body[data-mode="dark"] .cta-title em { color: var(--sun-400); }
 .cta-links { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: var(--s-3); margin-top: var(--s-6); }
 .cta-link-card {
   display: flex;
@@ -615,7 +591,8 @@ body[data-theme="dark"] .cta-title em { color: var(--sun-400); }
   align-items: center;
   gap: var(--s-2);
   padding: var(--s-3) var(--s-4);
-  transition: transform 0.2s var(--ease);
+  background: var(--surface-2);
+  transition: transform 0.2s var(--ease), background-color 0.4s, color 0.4s;
 }
 .cta-link-card:hover { transform: translateY(-2px); }
 .cta-link-card .k { display: block; margin-bottom: var(--s-1); font-size: 12px; line-height: 16px; font-weight: 800; letter-spacing: 0.08em; color: var(--fg-muted); }
@@ -628,7 +605,7 @@ body[data-theme="dark"] .cta-title em { color: var(--sun-400); }
   height: 44px;
   border: 0;
   border-radius: var(--r-pill);
-  background: var(--surface-2);
+  background: var(--surface);
   cursor: pointer;
   transition: background 0.2s;
 }
@@ -655,16 +632,19 @@ body[data-theme="dark"] .cta-title em { color: var(--sun-400); }
 }
 .toast-msg.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-/* ---------- Rodapé ---------- */
+/* ---------- Rodapé (faixa de superfície) ---------- */
 footer {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
   gap: var(--s-3);
-  max-width: calc(var(--container) + 2 * var(--s-5));
-  margin: 0 auto;
-  padding: var(--s-5);
-  padding-bottom: 128px; /* espaço para o mascote e o botão de tema */
+  width: min(var(--container), calc(100% - 2 * var(--s-3)));
+  margin: 0 auto 128px; /* espaço para o mascote e o botão de tema */
+  padding: var(--s-4) var(--s-5);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+  transition: background-color 0.4s, color 0.4s;
   font-size: 12px;
   line-height: 16px;
   font-weight: 800;
@@ -675,6 +655,91 @@ footer {
 /* ---------- Entrada ao rolar ---------- */
 .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.6s var(--ease), transform 0.6s var(--ease); }
 .reveal.in { opacity: 1; transform: none; }
+
+/* =====================================================================
+   Cena de planícies — fundo fixo ligado ao scroll (src/scene/*)
+   Só transform/opacity animam por frame; nada de mix-blend-mode.
+   @wiki docs/brain/conventions/ScrollScene.md
+   ===================================================================== */
+.scene {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0; /* ancorada embaixo + lvh: o capim nunca corta com a barra do iOS */
+  height: 100vh;
+  height: 100lvh;
+  z-index: -1; /* atrás do conteúdo, acima do fundo do body (#root não cria stacking context) */
+  overflow: hidden;
+  pointer-events: none;
+  contain: strict;
+}
+.scene > * { position: absolute; left: 0; right: 0; }
+.scene svg { display: block; width: 100%; height: 100%; }
+.scene-sky { inset: 0; }
+.scene-sky-layer { position: absolute; inset: 0; }
+.scene-stars { top: 0; height: 50%; will-change: transform, opacity; }
+.scene-star-group { position: absolute; inset: 0; }
+.scene-star { position: absolute; border-radius: var(--r-pill); background: #fdf6dc; }
+.scene-star-group.g0 { animation: twinkle 3.2s ease-in-out infinite alternate; }
+.scene-star-group.g1 { animation: twinkle 4.4s ease-in-out -1.2s infinite alternate; }
+.scene-star-group.g2 { animation: twinkle 5.6s ease-in-out -2.6s infinite alternate; }
+@keyframes twinkle { from { opacity: 1; } to { opacity: 0.35; } }
+.scene-sun,
+.scene-moon {
+  top: 12%;
+  left: 14%;
+  right: auto;
+  width: 72px;
+  height: 72px;
+  border-radius: var(--r-pill);
+  will-change: transform, opacity;
+}
+.scene-sun { background: radial-gradient(circle, #ffe9a3 0 45%, #f5c533 46% 100%); box-shadow: 0 0 48px 16px rgba(245, 197, 51, 0.45); }
+.scene-moon { top: 10%; width: 56px; height: 56px; background: transparent; box-shadow: inset -14px -6px 0 0 #f4ecd0; }
+.scene-clouds { height: 22%; }
+.scene-clouds-a { top: 6%; will-change: transform, opacity; }
+.scene-clouds-b { top: 18%; }
+.scene-drift { width: 100%; height: 100%; animation: drift 28s ease-in-out infinite alternate; }
+.scene-clouds-b .scene-drift { animation-duration: 40s; animation-direction: alternate-reverse; }
+@keyframes drift { from { transform: translateX(-24px); } to { transform: translateX(32px); } }
+.scene-hills { bottom: 0; transform-origin: 50% 100%; will-change: transform; }
+.scene-hills path, .scene-grass path { transition: fill 0.8s; }
+.scene-hills-far { height: 55%; }
+.scene-hills-near { height: 40%; }
+.scene-tree {
+  position: absolute;
+  bottom: 70%; /* em cima da crista da colina distante */
+  left: 72%;
+  width: 28vh;
+  height: 46vh;
+  transform-origin: 50% 100%;
+}
+.scene-tree svg { transform-origin: 50% 100%; }
+/* Telas estreitas: a árvore reduz e encosta à direita para não ficar atrás do texto do hero. */
+@media (max-width: 1000px) { .scene-tree { left: auto; right: 2%; transform: scale(0.6); transform-origin: 100% 100%; } }
+@media (max-width: 700px) { .scene-tree { right: -4%; transform: scale(0.4); } }
+.scene-veil { bottom: 0; height: 60%; background: linear-gradient(180deg, transparent, #0e1a2b); }
+.scene-grass { bottom: 0; height: 18%; transform-origin: 50% 100%; will-change: transform; }
+.scene-daisies { position: absolute; inset: 0; transform-origin: 50% 100%; animation: sway 6s ease-in-out infinite alternate; }
+.scene-daisy {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border-radius: var(--r-pill);
+  background: radial-gradient(circle, #f5c533 0 30%, #ffffff 32% 100%);
+}
+@keyframes sway { from { transform: skewX(-3deg); } to { transform: skewX(3deg); } }
+@media (max-width: 700px) {
+  /* Mobile: no máximo cinco camadas com will-change (estrelas, sol, colinas ×2, capim). */
+  .scene-clouds-b, .scene-daisies, .scene-star:nth-child(even) { display: none; }
+  .scene-clouds-a { will-change: auto; }
+  .scene-moon { will-change: auto; }
+}
+
+/* Movimento desligado (tweak ou prefers-reduced-motion via PlainsScene) */
+body[data-motion="off"] .scene *,
+body[data-motion="off"] .marquee-track { animation: none !important; }
+body[data-motion="off"] .reveal { opacity: 1; transform: none; transition: none; }
 
 /* =====================================================================
    CapiBot — balão-nuvem
@@ -727,7 +792,7 @@ footer {
   transform-origin: bottom right;
   color-scheme: light;
 }
-body[data-theme="dark"] .capy-speech-bubble { color-scheme: dark; }
+body[data-mode="dark"] .capy-speech-bubble { color-scheme: dark; }
 .capy-speech-bubble.open { display: flex; animation: bubblePop 0.25s var(--ease) forwards; }
 @keyframes bubblePop { from { opacity: 0; transform: translateY(12px) scale(0.92); } to { opacity: 1; transform: none; } }
 .capy-speech-bubble::after {

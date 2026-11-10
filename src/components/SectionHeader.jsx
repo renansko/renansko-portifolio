@@ -5,9 +5,9 @@ export default function SectionHeader({ num, titleKey, tag }) {
   return (
     <Reveal className="section-header">
       <span className="num">{num}</span>
-      <T k={titleKey} />
+      <T className="title" k={titleKey} />
       <span className="line" />
-      <span>— {tag}</span>
+      <span className="tag">— {tag}</span>
     </Reveal>
   );
 }
