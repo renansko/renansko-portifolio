@@ -9,6 +9,7 @@ const SWATCHES = [
 
 const OPTION_ROWS = [
   { key: 'theme', label: 'Tema', options: [['light', 'Dia'], ['dark', 'Noite']] },
+  { key: 'motion', label: 'Movimento', options: [['on', 'Ligado'], ['off', 'Desligado']] },
   { key: 'density', label: 'Espaçamento', options: [['compact', 'Compact'], ['normal', 'Normal'], ['spacious', 'Spacious']] },
 ];
 

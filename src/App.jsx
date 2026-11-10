@@ -11,11 +11,12 @@ import Projects from './components/Projects.jsx';
 import Skills from './components/Skills.jsx';
 import TweaksPanel from './components/TweaksPanel.jsx';
 import { LangProvider } from './i18n-context.jsx';
+import PlainsScene from './scene/PlainsScene.jsx';
 import { readStorage, writeStorage } from './storage.js';
 
 // Chave versionada: preferências do visual antigo (cyan/dark) não se aplicam ao novo.
 const TWEAKS_KEY = 'tweaks-v2';
-const TWEAK_DEFAULTS = { accent: 'grass', theme: 'light', density: 'normal' };
+const TWEAK_DEFAULTS = { accent: 'grass', theme: 'light', density: 'normal', motion: 'on' };
 
 function loadTweaks() {
   try {
@@ -43,6 +44,7 @@ export default function App() {
 
   useEffect(() => {
     // O CSS de tema usa body[data-*], então os tweaks são aplicados no <body>.
+    // data-mode e data-motion (efetivos) são escritos só pela PlainsScene.
     document.body.dataset.accent = tweaks.accent;
     document.body.dataset.theme = tweaks.theme;
     document.body.dataset.density = tweaks.density;
@@ -53,6 +55,7 @@ export default function App() {
 
   return (
     <LangProvider>
+      <PlainsScene theme={tweaks.theme} motion={tweaks.motion} />
       <Nav />
       <Hero />
       <Marquee />
