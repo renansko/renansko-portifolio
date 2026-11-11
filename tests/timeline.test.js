@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { hexToRgb } from '../src/scene/ink/ridges.js';
 import {
   MODE_DARK_ENTER,
   MODE_DARK_EXIT,
@@ -6,7 +7,10 @@ import {
   effectiveMotion,
   interp,
   modeFor,
-  sceneLayers,
+  PHASES,
+  sceneFrame,
+  sceneKeyframes,
+  skyAt,
   skyLayers,
 } from '../src/scene/timeline.js';
 
@@ -29,7 +33,7 @@ describe('timeline', () => {
   it.each(['light', 'dark'])('keyframes são crescentes e ficam em [0, 5] (tema %s)', (theme) => {
     const ranges = [
       ...skyLayers(theme).map((l) => l.input),
-      ...Object.values(sceneLayers(theme)).flatMap((layer) => Object.values(layer).map((k) => k.input)),
+      ...Object.values(sceneKeyframes(theme)).flatMap((k) => (k.input ? [k.input] : Object.values(k).map((v) => v.input))),
     ];
     for (const input of ranges) {
       expect(input[0]).toBeGreaterThanOrEqual(0);
@@ -39,8 +43,36 @@ describe('timeline', () => {
   });
 
   it('o sol só existe no tema Dia', () => {
-    expect(sceneLayers('light').sun).toBeDefined();
-    expect(sceneLayers('dark').sun).toBeUndefined();
+    expect(sceneKeyframes('light').sun).toBeDefined();
+    expect(sceneKeyframes('dark').sun).toBeUndefined();
+    for (const s of samples) expect(sceneFrame(s, 'dark').disc.moon, `S=${s}`).toBe(true);
+  });
+
+  it('no tema Dia o sol se põe antes de a lua aparecer', () => {
+    expect(sceneFrame(0, 'light').disc).toMatchObject({ moon: false, alpha: 1 });
+    expect(sceneFrame(5, 'light').disc).toMatchObject({ moon: true, alpha: 1 });
+    for (const s of samples) {
+      const { disc } = sceneFrame(s, 'light');
+      if (disc.moon) expect(sceneKeyframes('light').sun.opacity.output.at(-1)).toBe(0);
+      expect(disc.alpha).toBeGreaterThanOrEqual(0);
+    }
+  });
+
+  it.each(['light', 'dark'])('céu em S é a cor da fase nos platôs (tema %s)', (theme) => {
+    for (const { hold, colors } of PHASES[theme]) {
+      const sky = skyAt((hold[0] + hold[1]) / 2, theme);
+      colors.forEach((hex, stop) => {
+        hexToRgb(hex).forEach((c, ch) => expect(sky[stop][ch]).toBeCloseTo(c, 6));
+      });
+    }
+  });
+
+  it('a câmera desce: cumes afundados no hero, no lugar no contato', () => {
+    expect(sceneFrame(0, 'light').lift).toBeGreaterThan(0);
+    expect(sceneFrame(S_MAX, 'light').lift).toBe(0);
+    for (let i = 1; i < samples.length; i += 1) {
+      expect(sceneFrame(samples[i], 'light').lift).toBeLessThanOrEqual(sceneFrame(samples[i - 1], 'light').lift);
+    }
   });
 
   it('modo efetivo tem histerese entre a entrada e a saída do escuro', () => {

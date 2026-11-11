@@ -6,7 +6,7 @@ Código: `src/styles.css` (tokens no `:root`), `src/components/Hero.jsx`, `src/c
 
 A atmosfera veio de uma referência no Behance ("DONGURURU", filme promocional de Daegu Dong-gu, autor `kwaksu`):
 céu, nuvens, campo e o visual 3D macio, de massinha. **Os personagens da referência pertencem ao distrito e não são usados.**
-Toda a arte do site é original (cena de planícies em SVG/CSS, ver [ScrollScene](ScrollScene.md)). O mascote é a capivara própria do projeto.
+Toda a arte do site é original (cumes em sumi-e em WebGL com as cores dos tokens, ver [ScrollScene](ScrollScene.md); o shader é adaptado de código MIT). O mascote é a capivara própria do projeto.
 
 ## Tokens
 
@@ -24,9 +24,9 @@ Toda a arte do site é original (cena de planícies em SVG/CSS, ver [ScrollScene
 
 ## Composição (skill `fundamentos-ui`, projeto chemyia)
 
-- Hero em **Z**: promessa à esquerda (7 col.); as 5 col. da direita ficam vazias de propósito e a árvore da cena de fundo
+- Hero em **Z**: promessa à esquerda (7 col.); as 5 col. da direita ficam vazias de propósito e o sol/lua da cena de fundo
   ocupa o terço superior direito no início do percurso. CTA no fim da coluna de texto. Prova (números) numa faixa única.
-- A paisagem é o backdrop fixo de toda a página (não há mais card ilustrado no hero nem colinas no Contato).
+- A paisagem é o backdrop fixo de toda a página (não há mais card ilustrado no hero nem paisagem própria no Contato).
 - Seções com cabeçalho numerado no mesmo eixo; título e tag são pílulas de superfície. Cards só onde há grupo real
   (categoria, emprego, projeto). **Exceção:** `.panel` na coluna de texto do Sobre, porque texto corrido sobre o céu não garante AA.
 - Marquee é fita com a largura do container e cantos arredondados (não deve ler como linha do horizonte).

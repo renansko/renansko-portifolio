@@ -1,6 +1,7 @@
-// Timeline pura da cena de planícies: fases de luz, keyframes por camada e regras de modo.
+// Timeline pura da cena de scroll: fases de luz, keyframes da cena e regras de modo.
 // Tudo é função de S (índice contínuo de seção, 0 = hero … 5 = contato).
 // @wiki docs/brain/conventions/ScrollScene.md
+import { hexToRgb } from './ink/ridges.js';
 
 export const S_MAX = 5;
 
@@ -59,26 +60,52 @@ export function skyLayers(theme) {
 }
 
 const kf = (input, output) => ({ input, output });
+const at = (k, s) => interp(k.input, k.output, s);
 
 /**
- * Keyframes por camada. `y` em vh (positivo = mais para baixo), `scale` e `opacity` adimensionais.
- * Camadas ausentes num tema não são renderizadas (ex.: sol no tema Noite).
+ * Keyframes escalares da cena (uv: 0 embaixo, 1 em cima). `lift` afunda os cumes: alto no hero (mais céu),
+ * zero no contato (a câmera chegou ao chão). Camadas ausentes num tema não existem (ex.: sol no tema Noite).
  */
-export function sceneLayers(theme) {
+export function sceneKeyframes(theme) {
   const night = theme === 'dark';
   return {
-    cloudsA: { y: kf([0, 2.6], [0, -55]), opacity: kf([0, 1.8, 2.6], [1, 1, 0]) },
-    cloudsB: { y: kf([0, 3.2], [0, -75]), opacity: kf([0, 2.2, 3.2], [0.9, 0.9, 0]) },
-    hillsFar: { y: kf([0, 5], [22, 0]), scale: kf([0, 5], [1, 1.12]) },
-    tree: { scale: kf([0, 5], [1, 1.12]) },
-    hillsNear: { y: kf([1, 5], [42, 0]), scale: kf([1, 5], [1, 1.2]) },
-    grass: { y: kf([3.4, 5], [22, 0]) },
-    veil: { opacity: night ? kf([0, 5], [0.35, 0.55]) : kf([2.8, 5], [0, 0.5]) },
-    stars: { y: kf([0, 5], [0, -4]), opacity: night ? kf([0, 5], [1, 1]) : kf([3.8, 4.6], [0, 1]) },
+    lift: kf([0, 5], [0.3, 0]),
+    clouds: night ? kf([0, 2.6], [0.45, 0]) : kf([0, 1.8, 3.2], [0.9, 0.9, 0]),
+    stars: night ? kf([0, 5], [1, 1]) : kf([3.8, 4.6], [0, 1]),
     moon: night
-      ? { y: kf([0, 5], [0, 8]), opacity: kf([0, 5], [1, 1]) }
-      : { y: kf([3.7, 5], [15, 0]), opacity: kf([3.7, 4.5], [0, 1]) },
-    ...(night ? {} : { sun: { y: kf([0, 3.8], [0, 40]), opacity: kf([0, 3.2, 3.9], [1, 1, 0]) } }),
+      ? { y: kf([0, 5], [0.82, 0.74]), opacity: kf([0, 5], [1, 1]) }
+      : { y: kf([3.9, 5], [0.62, 0.8]), opacity: kf([3.9, 4.6], [0, 1]) },
+    ...(night ? {} : { sun: { y: kf([0, 3.8], [0.8, 0.42]), opacity: kf([0, 3.2, 3.9], [1, 1, 0]) } }),
+  };
+}
+
+/** Gradiente do céu em S: média das fases pesada pela opacidade (a soma dos pesos é 1). */
+export function skyAt(s, theme) {
+  const out = [[0, 0, 0], [0, 0, 0], [0, 0, 0]];
+  for (const layer of skyLayers(theme)) {
+    const w = interp(layer.input, layer.output, s);
+    if (!w) continue;
+    layer.colors.forEach((hex, stop) => {
+      hexToRgb(hex).forEach((c, ch) => { out[stop][ch] += c * w; });
+    });
+  }
+  return out;
+}
+
+/** Tudo que a cena precisa em S, além das cores de tinta (que vêm dos tokens CSS). */
+export function sceneFrame(s, theme) {
+  const k = sceneKeyframes(theme);
+  const sunAlpha = k.sun ? at(k.sun.opacity, s) : 0;
+  // Um disco só: o sol enquanto existe; a lua entra depois que ele se põe.
+  const disc = sunAlpha > 0
+    ? { moon: false, x: 0.78, y: at(k.sun.y, s), alpha: sunAlpha }
+    : { moon: true, x: 0.78, y: at(k.moon.y, s), alpha: at(k.moon.opacity, s) };
+  return {
+    sky: skyAt(s, theme),
+    lift: at(k.lift, s),
+    clouds: at(k.clouds, s),
+    stars: at(k.stars, s),
+    disc,
   };
 }
 

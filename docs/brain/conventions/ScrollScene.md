@@ -1,10 +1,10 @@
-# Cena de scroll "entrando na planície"
+# Cena de scroll: cumes em sumi-e
 
-Código: `src/scene/timeline.js` (puro), `src/scene/useSceneProgress.js`, `src/scene/PlainsScene.jsx`,
-bloco "Cena de planícies" em `src/styles.css`. PRD: issue #2.
+Código: `src/scene/timeline.js` (puro), `src/scene/useSceneProgress.js`, `src/scene/RidgesScene.jsx`,
+`src/scene/ink/*` (partes puras + WebGL2), bloco "Cena de cumes" em `src/styles.css`. PRD original: issue #2.
 
-Um fundo fixo em camadas (céu, estrelas, sol/lua, nuvens, colinas + árvore, véu, capim) fica atrás de todo o conteúdo.
-Rolar a página desce a câmera do céu ao chão e avança a luz do dia.
+Um canvas WebGL2 fixo atrás de todo o conteúdo desenha céu, estrelas, sol/lua, nuvens e quatro cumes pincelados.
+Rolar a página sobe os cumes (câmera desce) e avança a luz do dia.
 
 ## Progresso `S` (índice de seção)
 
@@ -22,15 +22,25 @@ Rolar a página desce a câmera do céu ao chão e avança a luz do dia.
 - Cada fase tem um platô (`hold`) e cruza linearmente com a vizinha. **Invariante: a soma das opacidades do céu é 1 em todo S**
   (testado em `tests/timeline.test.js`). Nova fase exige platôs ordenados e sem sobreposição.
 - Sol só no tema Dia (some após o crepúsculo); lua entra no fim do Dia e está sempre no tema Noite.
-- Colinas tingem pelo véu inferior (opacidade por S) e pelos tokens `--hill-*`, que trocam com `data-mode`. Sem `mix-blend-mode`.
+- Um disco só no shader: o sol enquanto existe; a lua só entra depois que ele se põe (atrás do cume distante).
+- O céu do shader é `skyAt(S)`: média das cores das fases pesada pela opacidade. É o mesmo gradiente de 3 paradas (0/55/100%).
+
+## Cumes em sumi-e (`src/scene/ink/`)
+
+- Adaptado de *ink-ridges* (ryanonline1234/ease-atlas, **MIT**): manter a atribuição nos cabeçalhos dos arquivos.
+- Cores **só dos tokens**, lidas do `body` a cada troca de `data-mode`: `--hill-back` (cume distante), `--hill-front`
+  (próximo), `--hill-deep` (crista e revoada), `--scene-cloud`, `--sun-400`, `--moon`. A tinta é suavizada (~0,8 s).
+  Os tokens precisam ser **hex** (`hexToRgb`); outro formato cai no fallback do Dia.
+- `ridgeLineAt` (JS) espelha o ruído do GLSL para a revoada seguir a crista: mudar o ruído exige mudar os dois.
+- `lift(S)` afunda os cumes (próximo afunda mais = paralaxe); sol/lua ficam no terço superior direito (foco do hero).
 
 ## Preferência de tema × modo efetivo
 
 | Atributo no `body` | Significado | Quem escreve |
 | --- | --- | --- |
 | `data-theme` | preferência salva (`light`/`dark`) | `App` |
-| `data-mode` | tokens efetivos: `dark` se tema Noite **ou** S na fase escura | só `PlainsScene` |
-| `data-motion` | movimento efetivo (`on`/`off`) | só `PlainsScene` |
+| `data-mode` | tokens efetivos: `dark` se tema Noite **ou** S na fase escura | só `RidgesScene` |
+| `data-motion` | movimento efetivo (`on`/`off`) | só `RidgesScene` |
 
 - Histerese: entra no escuro em `S ≥ 3,7`, volta ao claro em `S ≤ 3,4` (`modeFor`), para os cards não piscarem no limiar.
 - **Todo CSS de tema escuro usa `body[data-mode="dark"]`.** Há teste que proíbe o seletor antigo `data-theme="dark"]`.
@@ -44,21 +54,21 @@ usa `.panel`, o rodapé é uma faixa de superfície e o card de Contato é paine
 
 ## Performance
 
-- `.scene`: `position: fixed`, ancorada **embaixo** com `100lvh` (capim não corta no iOS), `z-index: -1`, `contain: strict`,
-  sem ponteiro, `aria-hidden`. O `#root` **não pode** criar stacking context (sumiria atrás do fundo do body ou na frente do conteúdo).
-- Só `transform` e `opacity` mudam por frame. `will-change` só em camadas do tamanho do próprio conteúdo, nunca no céu.
-- Até 700 px: sem 2º banco de nuvens, sem margaridas, metade das estrelas; no máximo cinco camadas com `will-change`.
-- Motion via `m` + `LazyMotion features={domMin}`. **`m` sem `LazyMotion` não atualiza os estilos** (renderiza só o valor inicial).
-  Usar `motion.*` completo custa ~+150 kB no bundle.
+- `.scene`: `position: fixed`, ancorada **embaixo** com `100lvh`, `z-index: -1`, `contain: strict`, sem ponteiro,
+  `aria-hidden`. O `#root` **não pode** criar stacking context (sumiria atrás do fundo do body ou na frente do conteúdo).
+- Canvas em no máximo 1× DPR (0,75× até 700 px). Só a névoa derivando → ~30 fps; scroll, ponteiro, revoada e
+  pincelada inicial desenham a cada frame. Aba oculta para o laço.
+- Sem WebGL2 (ou em jsdom, onde `getContext` é stubado) o canvas some e `.scene-fallback` pinta o gradiente do céu.
+- Motion só para o scroll (`useScroll`/MotionValue de S); a cena não usa componentes `m`.
 
 ## Movimento desligado
 
 `effectiveMotion(tweak, prefersReduced)`: o sistema vence o tweak. Desligado → S fixo em `STATIC_S = 2,5`, sem vínculo com o
-scroll; `body[data-motion="off"]` para brilho, balanço, deriva, marquee e mostra `.reveal` sem animação. O modo passa a depender
+scroll, sem pincelada/névoa/revoada (um frame estático); `body[data-motion="off"]` para brilho, balanço, deriva, marquee e mostra `.reveal` sem animação. O modo passa a depender
 só do tema. O tweak `motion` fica em `tweaks-v2` (linha "Movimento" no painel).
 
 ## Testes
 
-`tests/timeline.test.js`, `tests/sceneProgress.test.js`, cena em `tests/app.test.jsx` e `tests/scene-reduced-motion.test.jsx`
+`tests/timeline.test.js`, `tests/ridges.test.js`, `tests/sceneProgress.test.js`, cena em `tests/app.test.jsx` e `tests/scene-reduced-motion.test.jsx`
 (arquivo próprio: o Motion lê `prefers-reduced-motion` uma vez por módulo, então o stub de `matchMedia` é içado com `vi.hoisted`).
 Verificação manual de layout/performance não é coberta por testes (ver PRD).
