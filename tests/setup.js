@@ -17,6 +17,9 @@ if (!window.matchMedia) {
   });
 }
 
+// jsdom não tem WebGL (e avisa "not implemented" no getContext): a cena cai no fallback em CSS.
+HTMLCanvasElement.prototype.getContext = () => null;
+
 afterEach(() => {
   cleanup();
   window.localStorage.clear();
