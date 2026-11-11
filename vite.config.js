@@ -1,10 +1,10 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
-// GitHub Pages serve o projeto em https://renansko.github.io/renansko-portifolio/
+// Base relativo: o mesmo build funciona no GitHub Pages (/renansko-portifolio/) e na Vercel (/).
 // @wiki docs/brain/conventions/Deploy.md
 export default defineConfig({
-  base: '/renansko-portifolio/',
+  base: './',
   plugins: [react()],
   test: {
     environment: 'jsdom',
