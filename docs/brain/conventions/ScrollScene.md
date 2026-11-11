@@ -23,6 +23,9 @@ Rolar a página sobe os cumes (câmera desce) e avança a luz do dia.
   (testado em `tests/timeline.test.js`). Nova fase exige platôs ordenados e sem sobreposição.
 - Sol só no tema Dia (some após o crepúsculo); lua entra no fim do Dia e está sempre no tema Noite.
 - Um disco só no shader: o sol enquanto existe; a lua só entra depois que ele se põe (atrás do cume distante).
+- Sol e lua andam em **parábola da esquerda para a direita** (`arcAt`: x linear em S, y por início/ápice/fim).
+  Dia: sol de S 0 a 3,9, termina abaixo da crista (o cume pinta por cima = pôr do sol); a lua nasce à esquerda
+  em 3,9 e chega ao alto à direita no Contato. Noite: a lua cruza o céu inteiro de S 0 a 5.
 - O céu do shader é `skyAt(S)`: média das cores das fases pesada pela opacidade. É o mesmo gradiente de 3 paradas (0/55/100%).
 
 ## Cumes em sumi-e (`src/scene/ink/`)
@@ -32,7 +35,7 @@ Rolar a página sobe os cumes (câmera desce) e avança a luz do dia.
   (próximo), `--hill-deep` (crista e revoada), `--scene-cloud`, `--sun-400`, `--moon`. A tinta é suavizada (~0,8 s).
   Os tokens precisam ser **hex** (`hexToRgb`); outro formato cai no fallback do Dia.
 - `ridgeLineAt` (JS) espelha o ruído do GLSL para a revoada seguir a crista: mudar o ruído exige mudar os dois.
-- `lift(S)` afunda os cumes (próximo afunda mais = paralaxe); sol/lua ficam no terço superior direito (foco do hero).
+- `lift(S)` afunda os cumes (próximo afunda mais = paralaxe).
 
 ## Preferência de tema × modo efetivo
 
