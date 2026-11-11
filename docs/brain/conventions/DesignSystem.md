@@ -24,8 +24,8 @@ Toda a arte do site é original (cumes em sumi-e em WebGL com as cores dos token
 
 ## Composição (skill `fundamentos-ui`, projeto chemyia)
 
-- Hero em **Z**: promessa à esquerda (7 col.); as 5 col. da direita ficam vazias de propósito e o sol/lua da cena de fundo
-  ocupa o terço superior direito no início do percurso. CTA no fim da coluna de texto. Prova (números) numa faixa única.
+- Hero em **Z**: promessa à esquerda (7 col.); as 5 col. da direita ficam vazias de propósito para mostrar
+  a cena de fundo (cumes; sol nasce à esquerda e cruza o céu em parábola). CTA no fim da coluna de texto. Prova (números) numa faixa única.
 - A paisagem é o backdrop fixo de toda a página (não há mais card ilustrado no hero nem paisagem própria no Contato).
 - Seções com cabeçalho numerado no mesmo eixo; título e tag são pílulas de superfície. Cards só onde há grupo real
   (categoria, emprego, projeto). **Exceção:** `.panel` na coluna de texto do Sobre, porque texto corrido sobre o céu não garante AA.

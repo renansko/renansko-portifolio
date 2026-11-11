@@ -47,7 +47,7 @@ export default function Hero() {
   const { t } = useLang();
   return (
     <section className="hero" id="top">
-      {/* Coluna direita vazia de propósito: o sol/lua da cena de fundo ocupa o terço superior direito (Z). */}
+      {/* Coluna direita vazia de propósito: deixa a cena de fundo aparecer (Z). */}
       <div className="hero-grid">
         <div>
           <Reveal className="hero-meta">

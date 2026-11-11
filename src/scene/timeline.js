@@ -63,6 +63,25 @@ const kf = (input, output) => ({ input, output });
 const at = (k, s) => interp(k.input, k.output, s);
 
 /**
+ * Trajetória em parábola entre S = input[0] e input[1]: x anda linear da esquerda para a direita
+ * e y passa por (início, ápice, fim). Como x é linear em S, o caminho na tela é uma parábola.
+ */
+const arc = (input, x, y) => ({ input, x, y });
+
+/** Posição (uv) de um disco na parábola em S; fora da faixa, fica parado na ponta. */
+export function arcAt(path, s) {
+  const [s0, s1] = path.input;
+  const t = Math.min(1, Math.max(0, (s - s0) / (s1 - s0)));
+  const [y0, ya, y1] = path.y;
+  // Ápice em tp, com y(0) = y0 e y(1) = y1: tp / (1 - tp) = √((ya - y0) / (ya - y1)).
+  const r0 = Math.sqrt(Math.max(0, ya - y0));
+  const r1 = Math.sqrt(Math.max(0, ya - y1));
+  const tp = r0 + r1 > 0 ? r0 / (r0 + r1) : 0.5;
+  const a = tp > 0 ? (ya - y0) / (tp * tp) : ya - y1;
+  return { x: path.x[0] + (path.x[1] - path.x[0]) * t, y: ya - a * (t - tp) ** 2 };
+}
+
+/**
  * Keyframes escalares da cena (uv: 0 embaixo, 1 em cima). `lift` afunda os cumes: alto no hero (mais céu),
  * zero no contato (a câmera chegou ao chão). Camadas ausentes num tema não existem (ex.: sol no tema Noite).
  */
@@ -72,10 +91,13 @@ export function sceneKeyframes(theme) {
     lift: kf([0, 5], [0.3, 0]),
     clouds: night ? kf([0, 2.6], [0.45, 0]) : kf([0, 1.8, 3.2], [0.9, 0.9, 0]),
     stars: night ? kf([0, 5], [1, 1]) : kf([3.8, 4.6], [0, 1]),
+    // Lua: no tema Dia nasce à esquerda quando escurece e sobe até o alto à direita no contato;
+    // no tema Noite cruza o céu inteiro da esquerda para a direita.
     moon: night
-      ? { y: kf([0, 5], [0.82, 0.74]), opacity: kf([0, 5], [1, 1]) }
-      : { y: kf([3.9, 5], [0.62, 0.8]), opacity: kf([3.9, 4.6], [0, 1]) },
-    ...(night ? {} : { sun: { y: kf([0, 3.8], [0.8, 0.42]), opacity: kf([0, 3.2, 3.9], [1, 1, 0]) } }),
+      ? { arc: arc([0, 5], [0.08, 0.92], [0.7, 0.86, 0.66]), opacity: kf([0, 5], [1, 1]) }
+      : { arc: arc([3.9, 5], [0.06, 0.72], [0.38, 0.82, 0.82]), opacity: kf([3.9, 4.6], [0, 1]) },
+    // Sol: parábola da esquerda (manhã) ao ápice no dia e se põe à direita, atrás dos cumes.
+    ...(night ? {} : { sun: { arc: arc([0, 3.9], [0.08, 0.94], [0.7, 0.88, 0.2]), opacity: kf([0, 3.65, 3.9], [1, 1, 0]) } }),
   };
 }
 
@@ -98,8 +120,8 @@ export function sceneFrame(s, theme) {
   const sunAlpha = k.sun ? at(k.sun.opacity, s) : 0;
   // Um disco só: o sol enquanto existe; a lua entra depois que ele se põe.
   const disc = sunAlpha > 0
-    ? { moon: false, x: 0.78, y: at(k.sun.y, s), alpha: sunAlpha }
-    : { moon: true, x: 0.78, y: at(k.moon.y, s), alpha: at(k.moon.opacity, s) };
+    ? { moon: false, ...arcAt(k.sun.arc, s), alpha: sunAlpha }
+    : { moon: true, ...arcAt(k.moon.arc, s), alpha: at(k.moon.opacity, s) };
   return {
     sky: skyAt(s, theme),
     lift: at(k.lift, s),

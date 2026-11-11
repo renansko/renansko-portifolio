@@ -8,6 +8,7 @@ import {
   interp,
   modeFor,
   PHASES,
+  arcAt,
   sceneFrame,
   sceneKeyframes,
   skyAt,
@@ -64,6 +65,27 @@ describe('timeline', () => {
       colors.forEach((hex, stop) => {
         hexToRgb(hex).forEach((c, ch) => expect(sky[stop][ch]).toBeCloseTo(c, 6));
       });
+    }
+  });
+
+  it.each([
+    ['sol (Dia)', 'light', 'sun'],
+    ['lua (Dia)', 'light', 'moon'],
+    ['lua (Noite)', 'dark', 'moon'],
+  ])('%s anda em parábola da esquerda para a direita', (_, theme, body) => {
+    const path = sceneKeyframes(theme)[body].arc;
+    const [s0, s1] = path.input;
+    const pts = Array.from({ length: 21 }, (__, i) => arcAt(path, s0 + ((s1 - s0) * i) / 20));
+    expect(pts[0]).toMatchObject({ x: path.x[0] });
+    expect(pts[0].y).toBeCloseTo(path.y[0], 6);
+    expect(pts.at(-1).y).toBeCloseTo(path.y[2], 6);
+    expect(Math.max(...pts.map((p) => p.y))).toBeLessThanOrEqual(path.y[1] + 1e-9);
+    for (let i = 1; i < pts.length; i += 1) expect(pts[i].x).toBeGreaterThan(pts[i - 1].x);
+    // parábola: a segunda diferença de y é constante e negativa (concavidade para baixo)
+    const d2 = pts.slice(2).map((p, i) => p.y - 2 * pts[i + 1].y + pts[i].y);
+    for (const d of d2) {
+      expect(d).toBeLessThan(0);
+      expect(d).toBeCloseTo(d2[0], 9);
     }
   });
 

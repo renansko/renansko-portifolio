@@ -337,7 +337,7 @@ h1.hero-title .muted { color: var(--accent-text); }
   text-wrap: pretty;
 }
 
-/* A coluna direita fica vazia: o sol (ou a lua) da .scene é o ponto focal (terço superior direito). */
+/* A coluna direita fica vazia: deixa a .scene (cumes, sol/lua em parábola) aparecer. */
 .hero-grid > div { grid-column: 1; }
 /* Faixa de prova (região comum: um card, quatro números) */
 .stat-strip {
